@@ -1,0 +1,6 @@
+doc/*
+!doc/*.tex
+src/*
+!src/*.[ch]
+!Makefile
+rmpatch
