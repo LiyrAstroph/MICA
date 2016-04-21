@@ -32,6 +32,18 @@ void error_exit(int code)
       printf("error in reading file %s.\n", str_error_exit);
       exit(6);
 
+    case 7:
+      printf("error in allocate memeory for %s.\n", str_error_exit);
+      exit(7);
+
+    case 8:
+      printf("data file %s exceeds the largest allowed size.\n", str_error_exit);
+      exit(8);
+
+    case 9:
+      printf("error in matrix calculating %s.\n", str_error_exit);
+      exit(9);
+
     default:
       printf("cannot recognize the error code.\n");
       exit(-1);

@@ -8,16 +8,41 @@
 # *
 # */
 
+SHELL=/bin/bash
+
+CC       = gcc -O2 -Wall
+OPTIMIZE =
+
+#---------target system
+SYSTEM="Darwin"
+#SYSTEM="Linux"
+#SYSTEM="Cluster"
+
+ifeq ($(SYSTEM), "Darwin")
+#GSL_INCL    = -I/opt/local/include
+#GSL_LIBS    = -L/opt/local/lib/gsl/lib
+GSL_INCL    = $(shell pkg-config --cflags gsl) 
+GSL_LIBS    = $(shell pkg-config --libs gsl) 
+LAPACK_INCL = -I /usr/local/share/lapack/include -I/opt/local/include
+LAPACK_LIBS = -L /usr/local/share/lapack/lib -llapacke
+OPTIMIZE    = -O2 
+#-Wall
+endif
+
+
+OPTIONS  = $(OPTIMIZE)
+CFLAGS   = $(OPTIONS) $(GSL_INCL) $(LAPACK_INCL) 
+LIBS     = $(GSL_LIBS) $(LAPACK_LIBS) -lm
 
 EXEC     = rmpatch
 SRC      = src/
 INCL     = Makefile $(SRC)/allvars.h $(SRC)/proto.h
 
 OBJS  = $(SRC)/main.o $(SRC)/readparam.o $(SRC)/allvars.o $(SRC)/error.o $(SRC)/run.o \
-        $(SRC)/init.o
+        $(SRC)/init.o $(SRC)/mathfunc.o $(SRC)/mcmc_con.o $(SRC)/test.o
 
 $(EXEC): $(OBJS)
 	cd $(SRC)
-	$(CC) $(OBJS) -o $@
+	$(CC) $(OPTIMIZE) $(OBJS) $(LIBS) -o $@
 
 $(OBJS): $(INCL)

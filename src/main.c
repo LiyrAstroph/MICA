@@ -28,4 +28,5 @@ int main(int argc, char** argv)
   run();
 
   printf("========= End of RMPATCH ==============\n");
+  return 0;
 }

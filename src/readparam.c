@@ -4,6 +4,7 @@
 #include <unistd.h>
 
 #include "allvars.h"
+#include "proto.h"
 
 /*
  * read parameter file
@@ -185,6 +186,9 @@ void read_data()
   int i;
   char buf[200];
 
+//*************************************
+// read continuum data
+
   fp = fopen(fname_con, "r");
   if(fp==NULL)
   {
@@ -196,12 +200,54 @@ void read_data()
   while(!feof(fp))
   {
     fgets(buf, 200, fp);
-
     if(sscanf(buf, "%lf %lf %lf", &Tcon_data[i], &Fcon_data[i], &Fcerrs_data[i]) < 3)
     {
       strcpy(str_error_exit, fname_con);
       error_exit(6);
     }
     i++;
+
+    if(i > ndata_max)
+    {
+      strcpy(str_error_exit, fname_con);
+      error_exit(8);
+    }
   }
+  ncon_data = i;
+  printf("ncon_data: %d\n", ncon_data);
+  fclose(fp);
+
+//*************************************
+// read line data
+
+  fp = fopen(fname_line, "r");
+  if(fp==NULL)
+  {
+    strcpy(str_error_exit, fname_line);
+    error_exit(2);
+  }
+
+  i = 0;
+  while(!feof(fp))
+  {
+    fgets(buf, 200, fp);
+    if(sscanf(buf, "%lf %lf %lf", &Tline_data[i], &Fline_data[i], &Flerrs_data[i]) < 3)
+    {
+      strcpy(str_error_exit, fname_line);
+      error_exit(6);
+    }
+    i++;
+
+    if(i > ndata_max)
+    {
+      strcpy(str_error_exit, fname_line);
+      error_exit(8);
+    }
+  }
+  nline_data = i;
+  printf("nline_data: %d\n", nline_data); 
+  fclose(fp); 
+
+  nall_data = ncon_data + nline_data;
+  
 }

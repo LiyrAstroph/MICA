@@ -8,6 +8,6 @@
 void run()
 {
   read_param();
-  memory_alloc();
-  read_data();
+  init();
+  test();
 }
