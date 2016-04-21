@@ -7,10 +7,10 @@
 data/con_test.txt     % light curve 1
 data/line_test.txt    % light curve 2
 
-taulim  0.0   30.0    % 
-nc      10            %
+taulim  0.0   10.0    % 
+nc      4            %
 
-nmcmc   100000
+nmcmc   30000
 nbuilt  20000
 
 %%

@@ -9,5 +9,7 @@ void run()
 {
   read_param();
   init();
-  test();
+//  test();//
+  mcmc_con_run();
+  mcmc_conline_run();
 }

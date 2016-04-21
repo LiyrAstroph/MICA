@@ -68,18 +68,20 @@ int multiply_mat_MN_inverseA(double * a, double *b, int m, int n)
 {
   int * ipiv, info;
   ipiv=malloc(m*sizeof(int));
+
   info=LAPACKE_dgetrf(LAPACK_ROW_MAJOR, m, m, a, m, ipiv);
   if(info!=0)
   {
-    strcpy(str_error_exit, "multiply_mat_MN_inverseA");
+    strcpy(str_error_exit, "multiply_mat_MN_inverseA 1");
     error_exit(9);
   }
   info = LAPACKE_dgetrs(LAPACK_ROW_MAJOR, 'N', m, n, a, m, ipiv, b, n);
   if(info!=0)
   {
-    strcpy(str_error_exit, "multiply_mat_MN_inverseA");
+    strcpy(str_error_exit, "multiply_mat_MN_inverseA 2");
     error_exit(9);
   }
+
   free(ipiv);
   return info;
 }
@@ -314,7 +316,7 @@ void display_mat(double *a, int m, int n)
 
 double ** matrix_malloc(int n1, int n2)
 {
-  double ** mat;
+  double **mat;
   int i;
 
   if(!(mat = malloc(n1*sizeof(double*))))

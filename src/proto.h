@@ -10,6 +10,45 @@ void read_data();
 //init.c
 void init();
 void memory_alloc();
+void memory_alloc_data();
+void scale_light_curves();
+
+// mcmc_con.c
+void mcmc_con_init();
+void mcmc_con_run();
+void set_covar_Umat_con(double sigma, double tau, double alpha);
+void set_covar_mat_con(double sigma, double tau, double alpha);
+double probability_con(double *);
+void reconstruct_con();
+
+//mcmc_conline.c
+void mcmc_conline_init();
+void mcmc_conline_run();
+double Slc(double tcon, double tline, double *theta);
+double Sll(double ti, double tj, double *theta);
+void set_covar_mat(double *theta);
+void set_covar_Umat(double *theta);
+void set_covar_Amat(double *theta);
+double probability_conline(double *theta);
+double probability_conline_aicc(double *theta);
+double aicc();
+int reconstruct_conline();
+
+// mcmc.c
+int mcmc_sampling(char *fname_mcmc, double (* prob_fun)(double *) );
+
+// mcmc_conline.c
+void mcmc_conline_init();
+void mcmc_conline_sampling();
+void mcmc_conline_run();
+
+//mcmc_stats.c
+void get_cov_matrix(double *theta, int nstep, int ntheta);
+void get_cov_matrix_diag(double *theta, int nstep, int ntheta);
+void mcmc_stats(char *);
+
+// transferfunc.o
+void transfer_function(double *theta);
 
 //test.c
 void test();

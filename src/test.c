@@ -9,9 +9,9 @@ void test()
 {
   double *A, *B, *C;
   int m=3, n=2, k=4;
-  A=array_malloc(m*n);
-  B=array_malloc(n*k);
-  C=array_malloc(m*k);
+  A=array_malloc(ncon*ncon);
+  B=array_malloc(ncon*ncon);
+  C=array_malloc(ncon*ncon);
 
   A[0*n+0] = 1.0;
   A[0*n+1] = 2.0;
@@ -39,5 +39,9 @@ void test()
   display_mat(B, n, k);
   printf("\n");
   multiply_mat_MN_transposeB(B, C, A, n, m, k);
-  display_mat(A, n, m);  
+  display_mat(A, n, m); 
+
+  free(A); 
+  free(B); 
+  free(C); 
 }

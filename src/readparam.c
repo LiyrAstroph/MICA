@@ -247,7 +247,4 @@ void read_data()
   nline_data = i;
   printf("nline_data: %d\n", nline_data); 
   fclose(fp); 
-
-  nall_data = ncon_data + nline_data;
-  
 }

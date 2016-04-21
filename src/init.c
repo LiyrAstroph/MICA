@@ -2,25 +2,94 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
+#include <time.h>
+#include <gsl/gsl_rng.h>
 
 #include "allvars.h"
 #include "proto.h"
 
 void init()
 {
-  nall = ncon + nline;
-  memory_alloc();
+  int i;
+  double dT, T1, T2;
+
+  memory_alloc_data();
   read_data();
+
+  nall = ncon + nline;
+  nall_data = ncon_data + nline_data;
+  memory_alloc();
+  scale_light_curves();
+
+  memcpy(Fall_data, Fcon_data, ncon_data*sizeof(double));
+  memcpy(Fall_data+ncon_data, Fline_data, nline_data*sizeof(double));
+
+  T1 = Tcon_data[0];
+  T2 = Tcon_data[ncon_data-1];
+
+  dT = T2-T1;
+  T1 -= 0.1*dT;
+  T2 += 0.1*dT;
+  dT = (T2-T1)/(ncon-1.0);
+  for(i=0; i<ncon; i++)
+    Tcon[i] = T1 + dT *i;
+
+  T1 = Tline_data[0];
+  T2 = Tline_data[nline_data-1];
+
+  dT = T2-T1;
+  T1 -= 0.1*dT;
+  T2 += 0.1*dT;
+  dT = (T2-T1)/(nline-1.0);
+  for(i=0; i<nline; i++)
+    Tline[i] = T1 + dT *i;
+}
+
+void scale_light_curves()
+{
+  int i;
+  double mean, norm;
+
+  mean = 0.0;
+  norm = 0.0;
+  for(i=0; i<ncon_data; i++)
+  {
+    mean += Fcon_data[i]/(Fcerrs_data[i] * Fcerrs_data[i]);
+    norm += 1.0/(Fcerrs_data[i] * Fcerrs_data[i]);
+  }
+  mean /= norm;
+  scale_con = mean;
+
+  for(i=0; i<ncon_data;i++)
+  {
+    Fcon_data[i] /= mean;
+    Fcerrs_data[i] /= mean;
+  }
+
+  mean = 0.0;
+  norm = 0.0;
+  for(i=0; i<nline_data; i++)
+  {
+    mean += Fline_data[i]/(Flerrs_data[i]*Flerrs_data[i]);
+    norm += 1.0/(Flerrs_data[i]*Flerrs_data[i]);
+  }
+  mean /= norm;
+  scale_line = mean;
+  for(i=0; i<nline_data;i++)
+  {
+    Fline_data[i] /= mean;
+    Flerrs_data[i] /= mean;
+  }
+  
+  printf("scale: %e %e\n", scale_con, scale_line);
 }
 
 /*
  *
  */
-void memory_alloc()
+void memory_alloc_data()
 {
-  workspace_ipiv = malloc(ndata_max*sizeof(double));
-  workspace = malloc(10*nall_data*sizeof(double) + 10);
-
   Tcon_data = malloc(ndata_max*sizeof(double));
   if(Tcon_data==NULL)
   {
@@ -62,12 +131,22 @@ void memory_alloc()
     strcpy(str_error_exit, "Flerrs_data");
     error_exit(7);
   }
+}
+void memory_alloc()
+{
+  workspace_ipiv = malloc(ndata_max*sizeof(double));
+  workspace = malloc(10*nall_data*sizeof(double) + 10);
+  
+  Fall_data = array_malloc(nall_data);
 
   Smat = array_malloc(nall_data*nall_data);
   Nmat = array_malloc(nall_data*nall_data);
   Cmat = array_malloc(nall_data*nall_data);
   ICmat = array_malloc(nall_data*nall_data);
   ICvmat = array_malloc(nall_data*nall_data);
+
+  USmat = array_malloc(nall*nall_data);
+  ASmat = array_malloc(nall*nall);
 
   Tmat1 = array_malloc(nall_data*nall_data);
   Tmat2 = array_malloc(nall_data*nall_data);
@@ -81,4 +160,20 @@ void memory_alloc()
   Fline = array_malloc(nline);
   Flerrs = array_malloc(nline);
 
+  theta_range = matrix_malloc(ntheta_max, 2);
+  theta_best = array_malloc(ntheta_max);
+  theta_best_var = array_malloc(ntheta_max);
+  theta_input = array_malloc(ntheta_max);
+  sigma_input = array_malloc(ntheta_max);
+  theta_fixed = malloc(ntheta_max*sizeof(int));
+
+  cov_matrix = array_malloc(ntheta_max * ntheta_max);
+
+  grid_tau = array_malloc(nc);
+  TF_tau = array_malloc(ntau);
+  TF = array_malloc(ntau);
+
+  gsl_T = gsl_rng_default;
+  gsl_r = gsl_rng_alloc (gsl_T);
+  gsl_rng_set(gsl_r, time(NULL));
 }
