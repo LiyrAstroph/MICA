@@ -4,3 +4,8 @@ src/*
 !src/*.[ch]
 !Makefile
 rmpatch
+data/*
+!data/con_test.txt
+!data/line_text.txt
+analysis/*
+!analysis/*.py

@@ -10,7 +10,7 @@ char fname_con[100], fname_line[100];
 double tau_lim_low, tau_lim_up;
 int nc;
 double *grid_tau;
-const int ntau=100;
+const int ntau=200;
 double *TF_tau, *TF;
 
 // mcmc
@@ -27,6 +27,8 @@ double **theta_range, *theta_best, *theta_best_var;
 double *theta_input, *sigma_input;
 int *theta_fixed;
 
+double *theta_best_con, *theta_best_var_con;
+
 const gsl_rng_type * gsl_T;
 const gsl_rng * gsl_r;
 
@@ -37,6 +39,7 @@ int ncon_data, nline_data, nall_data;
 double *Tcon_data, *Tline_data, *Fcon_data, *Fcerrs_data, *Fline_data, *Flerrs_data;
 double *Fall_data;
 double scale_con, scale_line;
+double len_con, len_line, cad_con, cad_line;
 
 int ncon=100, nline=100, nall;
 double *Tcon, *Fcon, *Fcerrs, *Tline, *Fline, *Flerrs;

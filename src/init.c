@@ -24,6 +24,24 @@ void init()
 
   memcpy(Fall_data, Fcon_data, ncon_data*sizeof(double));
   memcpy(Fall_data+ncon_data, Fline_data, nline_data*sizeof(double));
+  
+  len_con = Tcon_data[ncon_data-1] - Tcon_data[0];
+  len_line = Tline_data[nline_data-1] - Tline_data[0];
+
+  cad_con = 0.0;
+  for(i=0; i<ncon_data-1; i++)
+  {
+    cad_con += Tcon_data[i+1] - Tcon_data[i];
+  }
+  cad_con /= (ncon_data-1);
+
+  cad_line = 0.0;
+  for(i=0; i<nline_data-1; i++)
+  {
+    cad_line += Tline_data[i+1] - Tline_data[i];
+  }
+  cad_line /= (nline_data-1);
+
 
   T1 = Tcon_data[0];
   T2 = Tcon_data[ncon_data-1];
@@ -50,6 +68,8 @@ void scale_light_curves()
 {
   int i;
   double mean, norm;
+  
+  scale_con = scale_line = 1.0;
 
   mean = 0.0;
   norm = 0.0;
@@ -162,10 +182,13 @@ void memory_alloc()
 
   theta_range = matrix_malloc(ntheta_max, 2);
   theta_best = array_malloc(ntheta_max);
-  theta_best_var = array_malloc(ntheta_max);
+  theta_best_var = array_malloc(ntheta_max*2);
   theta_input = array_malloc(ntheta_max);
   sigma_input = array_malloc(ntheta_max);
   theta_fixed = malloc(ntheta_max*sizeof(int));
+
+  theta_best_con = array_malloc(ntheta_max);
+  theta_best_var_con = array_malloc(ntheta_max*2);
 
   cov_matrix = array_malloc(ntheta_max * ntheta_max);
 

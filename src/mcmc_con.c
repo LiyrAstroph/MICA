@@ -15,9 +15,12 @@ void mcmc_con_run()
   strcpy(fname_mcmc, "data/mcmc_con.txt");
 
   mcmc_con_init();
-  mcmc_sampling(fname_mcmc, &probability_con);
+//  mcmc_sampling(fname_mcmc, &probability_con);
   mcmc_stats(fname_mcmc);
   reconstruct_con();
+
+  memcpy(theta_best_con, theta_best, ntheta*sizeof(double));
+  memcpy(theta_best_var_con, theta_best_var, ntheta*2*sizeof(double));
 }
 
 void mcmc_con_init()
@@ -30,7 +33,7 @@ void mcmc_con_init()
   theta_range[i][0] = log(1.0e-6);
   theta_range[i++][1] = log(10.0);
   theta_range[i][0] = log(1.0);
-  theta_range[i++][1] = log(1.0e4);
+  theta_range[i++][1] = log(1.0e5);
 
   i = 0;
   theta_input[i++] = log(0.1);
@@ -114,7 +117,10 @@ double probability_con(double *theta)//double sigmahat, double taud, double alph
   lndet = lndet_mat(Cmat, ncon_data, &info);
   lndet_ICq = lndet_mat(ICq, nq, &info);
   prob = prob - 0.5*lndet - 0.5*lndet_ICq;
-  
+
+/* penalize on larger tau than the length of continuum */  
+  prob -= log(taud/len_con);
+
   return prob;  
 }
 

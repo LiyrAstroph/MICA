@@ -53,18 +53,16 @@ void transfer_function(double *theta)
     phierr = 0.0;
     phi1 = phi2 = 0.0;
     fprintf(ftran, "%f ", tau);
-    for(j=0; j<1; j++)
+    fk = exp(theta[3]);
+    if( tau >= theta[4] - w &&  tau < theta[4] + w )
     {
-      if( tau >= theta[4] - w &&  tau < theta[4] + w )
-      {
-        phii = exp(theta[3+j])/(2.0*w);
-        phi += phii;
-        err1 = theta_best_var[3+j];
-        dlnphii = err1;
-        phi1 += exp(log(phii) - dlnphii);
-        phi2 += exp(log(phii) + dlnphii);
-        phierr += pow(phii * dlnphii, 2.0);
-      }
+      phii = fk/(2.0*w);
+      phi += phii;
+      err1 = theta_best_var[3+j];
+      dlnphii = err1;
+      phi1 += exp(log(phii) - dlnphii);
+      phi2 += exp(log(phii) + dlnphii);
+      phierr += pow(phii * dlnphii, 2.0);
     }
     fprintf(ftran, "%e %e %e %e\n", phi, sqrt(phierr), phi1, phi2);
     TF[i] = phi;
@@ -90,12 +88,19 @@ void transfer_function(double *theta)
       dlnphii = sqrt(pow(err1, 2.0) + pow(err2, 2.0) + pow(err3, 2.0));
       phi1 += exp(log(phii) - dlnphii);
 
+      //phi1 += exp(theta[3+j]-theta_best_var[(3+j)*2])/sqrt(2.0*PI)/(w )   
+      //* exp( - 0.5* pow( (tau - grid_tau[j])/(w), 2.0 ));
+     // phi2 += exp(theta[3+j]+theta_best_var[(3+j)*2+1])/sqrt(2.0*PI)/(w)   
+      //* exp( - 0.5* pow( (tau - grid_tau[j])/(w), 2.0 ));
+
       err1 = theta_best_var[(3+j)*2+1];
       err2 = theta_best_var[2*2+1]/w;
       err3 = pow( (tau - grid_tau[j])/w, 2.0 ) * err2;
       dlnphii = sqrt(pow(err1, 2.0) + pow(err2, 2.0) + pow(err3, 2.0));
       phi2 += exp(log(phii) + dlnphii);
       phierr += pow(phii * dlnphii, 2.0);
+
+
       //fprintf(ftran, "%e ", phii);
     }
     fprintf(ftran, "%e %e %e\n", phi, phi1, phi2);

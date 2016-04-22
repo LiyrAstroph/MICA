@@ -50,6 +50,9 @@ void mcmc_stats(char *);
 // transferfunc.o
 void transfer_function(double *theta);
 
+// lineconv.o
+void line_convolution();
+
 //test.c
 void test();
 

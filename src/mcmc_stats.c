@@ -49,6 +49,7 @@ void mcmc_stats(char * fname)
   FILE *fp;
   double **theta, tmp;
   int i, nstep, istep;
+  char buf[1000], *pstr, buf1[100];
   
   theta = malloc(ntheta*sizeof(double));
   for(i=0; i<ntheta; i++)

@@ -15,11 +15,12 @@ void mcmc_conline_run()
   strcpy(fname_mcmc, "data/mcmc.txt");
 
   mcmc_conline_init();
-  mcmc_sampling(fname_mcmc, &probability_conline);
+//  mcmc_sampling(fname_mcmc, &probability_conline);
   mcmc_stats(fname_mcmc);
   reconstruct_conline();
   transfer_function(theta_best);
   aicc();
+  line_convolution();
 }
 
 void mcmc_conline_init()
@@ -35,9 +36,9 @@ void mcmc_conline_init()
   theta_range[0][1] = log(10.0);
 
   theta_range[1][0] = log(1.0);
-  theta_range[1][1] = log(1.0e4);
+  theta_range[1][1] = log(1.0e5);
 
-  theta_range[2][0] = (tau_lim_up - tau_lim_low)/10.0;
+  theta_range[2][0] = (tau_lim_up - tau_lim_low)/1000.0;
   theta_range[2][1] = (tau_lim_up - tau_lim_low)*10.0;
   
   theta_range[3][0] = log(1.0e-10);
@@ -60,7 +61,7 @@ void mcmc_conline_init()
   theta_input[0] = theta_best[0];
   theta_input[1] = theta_best[1];
   theta_input[2] = (tau_lim_up-tau_lim_low)/5.0;
-  theta_input[4] = (tau_lim_up-tau_lim_low)/2.0;
+  theta_input[4] = (tau_lim_up-tau_lim_low)/10.0;
   theta_input[3] = 2.0/theta_input[4];
   theta_input[5] = log(10.0);
   
@@ -81,7 +82,7 @@ void mcmc_conline_init()
   theta_range[i][0] = log(1.0);
   theta_range[i++][1] = log(1.0e4);
 
-  theta_range[i][0] = (tau_lim_up - tau_lim_low)/(nc-1.0)/100.0;
+  theta_range[i][0] = (tau_lim_up - tau_lim_low)/(nc-1.0)/10.0;
   theta_range[i++][1] = (tau_lim_up - tau_lim_low)/(nc-1.0);
   for(j=0; j<nc; j++)
   {
@@ -236,10 +237,10 @@ double probability_conline(double *theta)
   
   prob -= 0.5*(lndet_C + lndet_ICq);
 
-//  prior = -0.5*pow(theta[0] - ln_sigmad_con, 2.0)/ln_sigmad_con_err/ln_sigmad_con_err;
-//          -0.5*pow(theta[1] - ln_taud_con, 2.0)/ln_taud_con_err/ln_taud_con_err;
-//  prob = prob + prior;
-  
+  prior = -0.5*pow(theta[0] - theta_best_con[0], 2.0)/pow(max(theta_best_var_con[0*2], theta_best_var_con[0*2+1]), 2.0)
+          -0.5*pow(theta[1] - theta_best_con[1], 2.0)/pow(max(theta_best_var_con[1*2], theta_best_var_con[1*2+1]), 2.0);
+
+  prob += prior;
   return prob;
 }
 
@@ -555,25 +556,22 @@ double Slc(double tcon, double tline, double *theta)
   }
   Stot *= (taud/2.0/w);
 #elif defined JAVELINE 
-  for(i=0; i<1; i++)
+  tauk = theta[4]; //theta[3+nc+i];
+  fk = exp(theta[3]);
+  DT = Dt - tauk;
+  if(DT < -w)
   {
-    tauk = theta[4]; //theta[3+nc+i];
-    fk = exp(theta[3+i]);
-    DT = Dt - tauk;
-    if(DT < -w)
-    {
-      Sk = exp( (DT + w) / taud ) - exp( (DT - w)/taud);
-    }
-    else if(DT < w)
-    {
-      Sk = 2.0 - exp(- (DT + w) / taud) - exp( (DT - w)/taud);
-    }
-    else
-    {
-      Sk = exp( - (DT - w)/taud) - exp ( - (DT + w)/taud);
-    }
-    Stot += fk * Sk;
+    Sk = exp( (DT + w) / taud ) - exp( (DT - w)/taud);
   }
+  else if(DT < w)
+  {
+    Sk = 2.0 - exp(- (DT + w) / taud) - exp( (DT - w)/taud);
+  }
+  else
+  {
+    Sk = exp( - (DT - w)/taud) - exp ( - (DT + w)/taud);
+  }
+  Stot = fk * Sk;
   Stot *= (taud/2.0/w);
 #else
   for(i=0; i<nc; i++)
@@ -797,13 +795,6 @@ int reconstruct_conline()
   multiply_mat_MN_transposeA(Larr, ICmat, Tmat1, nq, nall_data, nall_data);
   multiply_mat_MN(Cq, Tmat1, Tmat2, nq, nall_data, nq);
   multiply_mat_MN(Tmat2, Fall_data, ave, nq, 1, nall_data);
-  
-/*  fprintf(fout, "Detrend: ");
-  for(i=0; i<nq; i++)
-  {
-    fprintf(fout, "%e\t", ave[i]);
-  }
-  fprintf(fout, "\n");*/
 
   multiply_mat_MN(Larr, ave, yave, nall_data, 1, nq);
   for(i=0; i<nall_data; i++)ysub[i] = Fall_data[i] - yave[i];
@@ -811,6 +802,10 @@ int reconstruct_conline()
 
   multiply_matvec_MN(USmat, nall, nall_data, ybuf, yrec);
   multiply_mat_MN(Larr_rec, ave, yave_rec, nall, 1, nq);
+
+/* store the reconstructed, mean-substracted contionum */  
+  memcpy(Fcon, yrec, ncon*sizeof(double));
+
   for(i=0; i<nall; i++)yrec[i] += yave_rec[i];
 
   // get errors
@@ -828,12 +823,11 @@ int reconstruct_conline()
     yrec_err[i] = sigma * sqrt(ASmat[i*nall+i] - Tmp2[i*nall+i] + Tmp4[i*nall+i]);
   }
 
-  multiply_mat_MN_transposeA(Larr, ICmat, Tmat1, nq, nall_data, nall_data);
-  multiply_mat_MN(Cq, Tmat1, Tmat2, nq, nall_data, nq);
-  multiply_mat_MN_transposeA(Tmat1, Tmat2, Tmat3, nall_data, nall_data, nq);
-  for(i=0; i<nall_data*nall_data; i++)ICvmat[i] = ICmat[i] - Tmat3[i];
-  multiply_mat_MN(USmat, ICvmat, Tmp1, nall, nall_data, nall_data);
-  multiply_mat_MN_transposeB(Tmp1, USmat, Tmp2, nall, nall, nall_data);
+/* store the error */
+  for(i=0; i<ncon; i++)
+  {
+    Fcerrs[i] = sigma * sqrt(ASmat[i*nall+i] - Tmp2[i*nall+i]);
+  }
 
   frec = fopen("data/sall_con.txt", "w");
   for(i=0; i<ncon; i++)
