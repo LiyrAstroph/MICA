@@ -5,6 +5,8 @@
 #include <string.h>
 #include <gsl/gsl_statistics.h>
 #include <gsl/gsl_sort.h>
+#include <gsl/gsl_histogram.h>
+#include <gsl/gsl_fit.h>
 
 #include "allvars.h"
 #include "proto.h"
@@ -89,6 +91,23 @@ void mcmc_stats(char * fname)
     theta_best_var[i*2+1] -= theta_best[i];
 
     printf("%f %f %f\n", theta_best[i], theta_best_var[i*2], theta_best_var[i*2+1]);
+  }
+
+  const int  nh=50;
+  int j;
+  double hmax, hmin;
+  gsl_histogram *h[ntheta];
+  for(i=0; i<ntheta; i++)
+  {
+    h[i] = gsl_histogram_alloc(nh);
+    hmax = gsl_stats_max(&theta[i][nbuilt], 1, istep-nbuilt);
+    hmin = gsl_stats_min(&theta[i][nbuilt], 1, istep-nbuilt);
+    gsl_histogram_set_ranges_uniform(h[i], hmin, hmax);
+
+    for(j = nbuilt; j<nmcmc; j++)
+    {
+      gsl_histogram_increment(h[j], theta[i][j]);
+    }
   }
 
   for(i = 0; i<ntheta; i++)
