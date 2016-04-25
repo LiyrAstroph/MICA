@@ -11,7 +11,7 @@ nt=data.shape[0]
 
 print(nt)
 
-nc = 10
+nc = 4
 
 par=np.zeros((nc+4, 5))
 
