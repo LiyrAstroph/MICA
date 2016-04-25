@@ -199,7 +199,8 @@ void read_data()
   i = 0;
   while(!feof(fp))
   {
-    fgets(buf, 200, fp);
+    if(fgets(buf, 200, fp)==NULL)
+      break;
     if(sscanf(buf, "%lf %lf %lf", &Tcon_data[i], &Fcon_data[i], &Fcerrs_data[i]) < 3)
     {
       strcpy(str_error_exit, fname_con);
@@ -230,7 +231,8 @@ void read_data()
   i = 0;
   while(!feof(fp))
   {
-    fgets(buf, 200, fp);
+    if(fgets(buf, 200, fp)==NULL)
+      break;
     if(sscanf(buf, "%lf %lf %lf", &Tline_data[i], &Fline_data[i], &Flerrs_data[i]) < 3)
     {
       strcpy(str_error_exit, fname_line);

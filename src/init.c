@@ -62,6 +62,11 @@ void init()
   dT = (T2-T1)/(nline-1.0);
   for(i=0; i<nline; i++)
     Tline[i] = T1 + dT *i;
+
+  strcpy(fname_results, "data/results.txt");
+  fp_results = fopen(fname_results, "w");
+
+  flag_detrend = 0;
 }
 
 void scale_light_curves()
@@ -155,7 +160,7 @@ void memory_alloc_data()
 void memory_alloc()
 {
   workspace_ipiv = malloc(ndata_max*sizeof(double));
-  workspace = malloc(10*nall_data*sizeof(double) + 10);
+  workspace = malloc(10*ndata_max*sizeof(double) + 10);
   
   Fall_data = array_malloc(nall_data);
 

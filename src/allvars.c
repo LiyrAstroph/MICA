@@ -4,7 +4,9 @@
 
 // file names
 char fname_param[100];
-char fname_con[100], fname_line[100];
+char fname_con[100], fname_line[100], fname_results[100];
+
+FILE *fp_results;
 
 // transfer function parameters
 double tau_lim_low, tau_lim_up;
@@ -41,7 +43,7 @@ double *Fall_data;
 double scale_con, scale_line;
 double len_con, len_line, cad_con, cad_line;
 
-int ncon=100, nline=100, nall;
+int ncon=200, nline=500, nall;
 double *Tcon, *Fcon, *Fcerrs, *Tline, *Fline, *Flerrs;
 
 // error exit

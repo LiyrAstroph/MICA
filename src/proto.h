@@ -31,7 +31,7 @@ void set_covar_Umat(double *theta);
 void set_covar_Amat(double *theta);
 double probability_conline(double *theta);
 double probability_conline_aicc(double *theta);
-double aicc();
+double cal_aicc();
 int reconstruct_conline();
 
 // mcmc.c
@@ -46,6 +46,8 @@ void mcmc_conline_run();
 void get_cov_matrix(double *theta, int nstep, int ntheta);
 void get_cov_matrix_diag(double *theta, int nstep, int ntheta);
 void mcmc_stats(char *);
+int par_fit(double *theta, int n, double *p);
+int fitfunc(int m, int n, double *p, double *dy, double **devc, void *vars);
 
 // transferfunc.o
 void transfer_function(double *theta);

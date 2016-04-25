@@ -44,6 +44,10 @@ void error_exit(int code)
       printf("error in matrix calculating %s.\n", str_error_exit);
       exit(9);
 
+    case 10:
+      printf("length of mcmc chain is smaller than nbuilt in %s.\n", str_error_exit);
+      exit(10);
+
     default:
       printf("cannot recognize the error code.\n");
       exit(-1);

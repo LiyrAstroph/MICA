@@ -1,6 +1,7 @@
 #ifndef _ALLVARS_H
 #define _ALLVARS_H
 
+#include <stdio.h>
 #include <gsl/gsl_rng.h>
 #include <math.h>
 
@@ -11,7 +12,9 @@
 
 // file names
 extern char fname_param[100];
-extern char fname_con[100], fname_line[100];
+extern char fname_con[100], fname_line[100], fname_results[100];
+
+extern FILE *fp_results;
 
 // transfer function parameters
 extern double tau_lim_low, tau_lim_up;

@@ -119,7 +119,7 @@ double probability_con(double *theta)//double sigmahat, double taud, double alph
   prob = prob - 0.5*lndet - 0.5*lndet_ICq;
 
 /* penalize on larger tau than the length of continuum */  
-  prob -= log(taud/len_con);
+//  prob -= log(taud/len_con);
 
   return prob;  
 }
@@ -244,6 +244,8 @@ void reconstruct_con()
   multiply_mat_MN_transposeA(Larr, ICmat, Tmat1, nq, ncon_data, ncon_data);
   multiply_mat_MN(Cq, Tmat1, Tmat2, nq, ncon_data, nq);
   multiply_mat_MN(Tmat2, Fcon_data, ave, nq, 1, ncon_data);
+  printf("ave %f\n", ave[0]);
+
 // subtract the linear trend   
   multiply_mat_MN(Larr, ave, yave, ncon_data, 1, nq); 
   for(i=0;i<ncon_data;i++)ysub[i] = Fcon_data[i] - yave[i];

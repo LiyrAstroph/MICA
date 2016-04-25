@@ -11,5 +11,5 @@ void run()
   init();
 //  test();//
   mcmc_con_run();
-  mcmc_conline_run();
+//  mcmc_conline_run();
 }

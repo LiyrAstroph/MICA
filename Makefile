@@ -16,8 +16,8 @@ OPTIMIZE =
 #OPTIMIZE = -DTOPHAT
 
 #---------target system
-SYSTEM="Darwin"
-#SYSTEM="Linux"
+#SYSTEM="Darwin"
+SYSTEM="Linux"
 #SYSTEM="Cluster"
 
 ifeq ($(SYSTEM), "Darwin")

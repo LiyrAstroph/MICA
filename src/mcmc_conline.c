@@ -11,16 +11,19 @@
 
 void mcmc_conline_run()
 {
+  double aicc;
+
   char fname_mcmc[100];
   strcpy(fname_mcmc, "data/mcmc.txt");
 
   mcmc_conline_init();
-//  mcmc_sampling(fname_mcmc, &probability_conline);
+  mcmc_sampling(fname_mcmc, &probability_conline);
   mcmc_stats(fname_mcmc);
   reconstruct_conline();
   transfer_function(theta_best);
-  aicc();
+  aicc = cal_aicc();
   line_convolution();
+  fprintf(fp_results, "aicc: %d %f\n", nc, aicc);
 }
 
 void mcmc_conline_init()
@@ -244,7 +247,7 @@ double probability_conline(double *theta)
   return prob;
 }
 
-double aicc()
+double cal_aicc()
 {
   double prob, aic, aicc;
   int k, n;
@@ -257,7 +260,7 @@ double aicc()
   aic = 2.0*k - 2.0*prob;
 
   aicc = aic + 2.0*k*(k+1.0)/(n - k - 1.0);
-  //aicc = -2.0*prob + k * log(n); 
+
   printf("aicc: %d %f\n", nc, aicc);
   return aicc;
 }
