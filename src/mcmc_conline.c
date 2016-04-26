@@ -21,6 +21,7 @@ void mcmc_conline_run()
   mcmc_stats(fname_mcmc);
   reconstruct_conline();
   transfer_function(theta_best);
+  printf("Prob: %f\n", probability_conline(theta_best));
   aicc = cal_aicc();
   line_convolution();
   fprintf(fp_results, "aicc: %d %f\n", nc, aicc);
@@ -251,8 +252,9 @@ double probability_conline(double *theta)
   {
     prior += (theta[1] - log(cad_con) ) / fabs(log(cad_con));
   }
-  prior += -0.5*pow(theta[1] - theta_best_con[1], 2.0)/pow(0.5*(theta_best_var_con[1*2]+theta_best_var_con[1*2+1])/10.0, 2.0);
+  prior += -0.5*pow(theta[1] - theta_best_con[1], 2.0)/pow(0.5*(theta_best_var_con[1*2]+theta_best_var_con[1*2+1]), 2.0);
   
+//  printf("%f %f\n", 0.5*(theta_best_var_con[0*2]+theta_best_var_con[0*2+1]), 0.5*(theta_best_var_con[1*2]+theta_best_var_con[1*2+1]));
   prob += prior;
   return prob;
 }

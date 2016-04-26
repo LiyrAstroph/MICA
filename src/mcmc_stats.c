@@ -79,7 +79,7 @@ void mcmc_stats(char * fname)
     {
       fscanf(fp, "%lf", &theta[i][nstep]);
     }
-    fscanf(fp,"%lf %lf\n", &tmp);
+    fscanf(fp,"%lf\n", &tmp);
     nstep++;
   }
   printf("nstep: %d\n", nstep);
@@ -109,7 +109,7 @@ void mcmc_stats(char * fname)
 
     printf("Sts: %d %f %f %f\n", i, theta_best[i], theta_best_var[i*2], theta_best_var[i*2+1]);
 
-    par_fit(&theta[i][nbuilt-1], nmcmc-nbuilt, pars);
+    /*par_fit(&theta[i][nbuilt-1], nmcmc-nbuilt, pars);
 
     theta_best[i] = pars[1];
 
@@ -118,7 +118,7 @@ void mcmc_stats(char * fname)
 
     theta_best_var[i*2] = min( pars[2], err_max1);
     theta_best_var[i*2+1] = min(pars[2], err_max2);
-    printf("Fit: %d %f %f %f %f\n", i, theta_best[i], theta_best_var[i*2], theta_best_var[i*2+1], err_max1);
+    printf("Fit: %d %f %f %f %f\n", i, theta_best[i], theta_best_var[i*2], theta_best_var[i*2+1], err_max1);*/
 
   }
   

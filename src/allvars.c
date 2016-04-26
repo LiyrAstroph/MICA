@@ -43,7 +43,7 @@ double *Fall_data;
 double scale_con, scale_line;
 double len_con, len_line, cad_con, cad_line;
 
-int ncon=200, nline=500, nall;
+int ncon=500, nline=500, nall;
 double *Tcon, *Fcon, *Fcerrs, *Tline, *Fline, *Flerrs;
 
 // error exit
