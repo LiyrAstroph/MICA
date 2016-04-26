@@ -17,7 +17,7 @@ void mcmc_conline_run()
   strcpy(fname_mcmc, "data/mcmc.txt");
 
   mcmc_conline_init();
-  mcmc_sampling(fname_mcmc, &probability_conline);
+//  mcmc_sampling(fname_mcmc, &probability_conline);
   mcmc_stats(fname_mcmc);
   reconstruct_conline();
   transfer_function(theta_best);
@@ -86,7 +86,7 @@ void mcmc_conline_init()
   theta_range[i][0] = log(1.0);
   theta_range[i++][1] = log(1.0e4);
 
-  theta_range[i][0] = (tau_lim_up - tau_lim_low)/(nc-1.0)/2.0;
+  theta_range[i][0] = (tau_lim_up - tau_lim_low)/(nc-1.0)/10.0;
   theta_range[i++][1] = (tau_lim_up - tau_lim_low)/(nc-1.0);
   for(j=0; j<nc; j++)
   {
@@ -254,7 +254,6 @@ double probability_conline(double *theta)
   }
   prior += -0.5*pow(theta[1] - theta_best_con[1], 2.0)/pow(0.5*(theta_best_var_con[1*2]+theta_best_var_con[1*2+1]), 2.0);
   
-//  printf("%f %f\n", 0.5*(theta_best_var_con[0*2]+theta_best_var_con[0*2+1]), 0.5*(theta_best_var_con[1*2]+theta_best_var_con[1*2+1]));
   prob += prior;
   return prob;
 }

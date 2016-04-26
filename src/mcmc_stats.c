@@ -47,8 +47,6 @@ void get_cov_matrix_diag(double *theta, int nstep, int ntheta)
   }
 }
 
-
-const int  nh=30;
 void mcmc_stats(char * fname)
 {
   FILE *fp;
@@ -109,7 +107,7 @@ void mcmc_stats(char * fname)
 
     printf("Sts: %d %f %f %f\n", i, theta_best[i], theta_best_var[i*2], theta_best_var[i*2+1]);
 
-    /*par_fit(&theta[i][nbuilt-1], nmcmc-nbuilt, pars);
+    par_fit(&theta[i][nbuilt-1], nmcmc-nbuilt, pars);
 
     theta_best[i] = pars[1];
 
@@ -118,7 +116,7 @@ void mcmc_stats(char * fname)
 
     theta_best_var[i*2] = min( pars[2], err_max1);
     theta_best_var[i*2+1] = min(pars[2], err_max2);
-    printf("Fit: %d %f %f %f %f\n", i, theta_best[i], theta_best_var[i*2], theta_best_var[i*2+1], err_max1);*/
+    printf("Fit: %d %f %f %f %f\n", i, theta_best[i], theta_best_var[i*2], theta_best_var[i*2+1], err_max1);
 
   }
   
@@ -133,7 +131,7 @@ struct vars_struct
 {
   double *x, *y;// *ey;
 };
-
+const int  nh=10;
 int par_fit(double *theta, int n, double *pfit)
 {
   int i, j;
@@ -155,8 +153,13 @@ int par_fit(double *theta, int n, double *pfit)
     gsl_histogram_increment(hist, theta[j]);
   }
     
-  memcpy(x, hist->range, nh*sizeof(double));
-  memcpy(y, hist->bin, nh*sizeof(double));
+//  memcpy(x, hist->range, nh*sizeof(double));
+//  memcpy(y, hist->bin, nh*sizeof(double));
+  for(i=0; i<nh; i++)
+  {
+    x[i] = 0.5*(hist->range[i]+hist->range[i+1]);
+    y[i] = hist->bin[i];
+  }
   v.x = x;
   v.y = y;
   memset(&fitconfig, 0, sizeof(fitconfig));
@@ -169,7 +172,7 @@ int par_fit(double *theta, int n, double *pfit)
   pars_set[0].limited[0] =  1;
   pars_set[0].limits[0] = 1.0e-5;
 
-  pars_set[1].limited[0] =  1;
+  pars_set[1].limited[0] =  0;
   pars_set[1].limits[0] = hmin;
   pars_set[1].limited[1] =  1;
   pars_set[1].limits[1] = hmax;

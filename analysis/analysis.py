@@ -5,13 +5,13 @@ from matplotlib.backends.backend_pdf import PdfPages
 
 pdf = PdfPages('hist.pdf')
 
-data = np.loadtxt("../data/mcmc_3.txt")
-nb = 10000
+data = np.loadtxt("../data/mcmc_10.txt")
+nb = 20000
 nt=data.shape[0]
 
 print(nt)
 
-nc = 3
+nc = 10
 
 par=np.zeros((nc+4, 5))
 
