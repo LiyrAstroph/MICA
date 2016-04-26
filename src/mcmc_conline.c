@@ -38,7 +38,7 @@ void mcmc_conline_init()
   theta_range[0][0] = log(1.0e-6);
   theta_range[0][1] = log(10.0);
 
-  theta_range[1][0] = log(1.0);
+  theta_range[1][0] = log(1.0e-2);
   theta_range[1][1] = log(1.0e5);
 
   theta_range[2][0] = (tau_lim_up - tau_lim_low)/1000.0;
@@ -240,9 +240,19 @@ double probability_conline(double *theta)
   
   prob -= 0.5*(lndet_C + lndet_ICq);
 
-  prior = -0.5*pow(theta[0] - theta_best_con[0], 2.0)/pow(max(theta_best_var_con[0*2], theta_best_var_con[0*2+1]), 2.0)
-          -0.5*pow(theta[1] - theta_best_con[1], 2.0)/pow(max(theta_best_var_con[1*2], theta_best_var_con[1*2+1]), 2.0);
-
+  prior = -0.5*pow(theta[0] - theta_best_con[0], 2.0)/pow(0.5*(theta_best_var_con[0*2]+theta_best_var_con[0*2+1]), 2.0);
+ 
+//penalize very large tau or very small tau  
+  if(theta[1] > log(len_con) )
+  {
+    prior += (log(len_con) - theta[1])/fabs(log(cad_con));
+  }
+  if(theta[1] < log(cad_con))
+  {
+    prior += (theta[1] - log(cad_con) ) / fabs(log(cad_con));
+  }
+  prior += -0.5*pow(theta[1] - theta_best_con[1], 2.0)/pow(0.5*(theta_best_var_con[1*2]+theta_best_var_con[1*2+1])/10.0, 2.0);
+  
   prob += prior;
   return prob;
 }

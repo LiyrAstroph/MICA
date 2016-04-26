@@ -32,7 +32,7 @@ void mcmc_con_init()
   i=0;
   theta_range[i][0] = log(1.0e-6);
   theta_range[i++][1] = log(10.0);
-  theta_range[i][0] = log(1.0);
+  theta_range[i][0] = log(1.0e-2);
   theta_range[i++][1] = log(1.0e5);
 
   i = 0;
@@ -54,7 +54,7 @@ void mcmc_con_init()
 double probability_con(double *theta)//double sigmahat, double taud, double alpha)
 {
   double sigmahat, taud, alpha;
-  double prob, lndet, lndet_ICq, sigma;
+  double prob, prior, lndet, lndet_ICq, sigma;
   double *ybuf, *Larr, *Cq, *ICq, *ave, *yave, *ysub;
   int i, nq, info;
   
@@ -118,10 +118,18 @@ double probability_con(double *theta)//double sigmahat, double taud, double alph
   lndet_ICq = lndet_mat(ICq, nq, &info);
   prob = prob - 0.5*lndet - 0.5*lndet_ICq;
 
-/* penalize on larger tau than the length of continuum */  
-//  prob -= log(taud/len_con);
-
-  return prob;  
+/* penalize on larger tau than the length of continuum */ 
+  prior = 0.0; 
+  if(theta[1] > log(len_con))
+  {
+    prior = (log(len_con) - theta[1])/fabs(log(cad_con));
+  }
+  
+  if(theta[1] < log(cad_con) )
+  {
+    prior = (theta[1] - log(cad_con))/fabs(log(cad_con));
+  }
+  return prob + prior;  
 }
 
 /* calculate covariance matrix */
@@ -172,24 +180,25 @@ void reconstruct_con()
   double *ybuf, *Larr, *Larr_rec, *yave, *yave_rec, *Cq, *ICq, *ysub, *ave;
   double *Tmp1, *Tmp2, *Tmp3, *Tmp4;
 
-  int i, nq, info;
+  int i, nq, info, nmax;
 
   nq = 1+flag_detrend;
 
   yave = workspace;
   ysub = yave + ncon_data;
-  Larr_rec = ysub + ncon_data;    //Larr_rec is a nq*n matrix
-  yave_rec = Larr_rec + nq*ncon_data; 
-  ybuf = yave_rec + ncon_data;
+  Larr_rec = ysub + ncon_data;    //Larr_rec is a nq*ncon matrix
+  yave_rec = Larr_rec + nq*ncon;  //yave_rec is ncon matrix
+  ybuf = yave_rec + ncon;
   Larr = ybuf + ncon_data;   // Larr is a nq*n matrix
   Cq = Larr + nq*ncon_data;
   ICq = Cq + nq*nq;
   ave = ICq + nq*nq;
 
-  Tmp1 = array_malloc(max(ncon, ncon_data)*max(ncon, ncon_data));     // temporary matrixes
-  Tmp2 = array_malloc(max(ncon, ncon_data)*max(ncon, ncon_data));
-  Tmp3 = array_malloc(max(ncon, ncon_data)*max(ncon, ncon_data));
-  Tmp4 = array_malloc(max(ncon, ncon_data)*max(ncon, ncon_data));
+  nmax = max(ncon, ncon_data);
+  Tmp1 = array_malloc(nmax*nmax);     // temporary matrixes
+  Tmp2 = array_malloc(nmax*nmax);
+  Tmp3 = array_malloc(nmax*nmax);
+  Tmp4 = array_malloc(nmax*nmax);
 
   sigmahat = exp(theta_best[0]);
   tau = exp(theta_best[1]);
@@ -244,8 +253,6 @@ void reconstruct_con()
   multiply_mat_MN_transposeA(Larr, ICmat, Tmat1, nq, ncon_data, ncon_data);
   multiply_mat_MN(Cq, Tmat1, Tmat2, nq, ncon_data, nq);
   multiply_mat_MN(Tmat2, Fcon_data, ave, nq, 1, ncon_data);
-  printf("ave %f\n", ave[0]);
-
 // subtract the linear trend   
   multiply_mat_MN(Larr, ave, yave, ncon_data, 1, nq); 
   for(i=0;i<ncon_data;i++)ysub[i] = Fcon_data[i] - yave[i];
@@ -254,6 +261,7 @@ void reconstruct_con()
   multiply_matvec(ICmat, ysub, ncon_data, ybuf);
   multiply_matvec_MN(USmat, ncon, ncon_data, ybuf, Fcon);
   multiply_mat_MN(Larr_rec, ave, yave_rec, ncon, 1, nq);
+
   for(i=0; i<ncon; i++)Fcon[i] = Fcon[i] + yave_rec[i];
 
   multiply_mat_MN(USmat, ICmat, Tmp1, ncon, ncon_data, ncon_data);

@@ -8,7 +8,7 @@
 #define PI ((M_PI))
 
 #define max(a, b) ((a>=b?a:b))
-
+#define min(a, b) ((a>=b?b:a))
 
 // file names
 extern char fname_param[100];

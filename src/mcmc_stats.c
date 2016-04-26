@@ -52,7 +52,7 @@ const int  nh=30;
 void mcmc_stats(char * fname)
 {
   FILE *fp;
-  double **theta, tmp;
+  double **theta, tmp, err_max1, err_max2;
   int i, j, nstep, istep;
   char buf[1000], *pstr, buf1[100];
   double pars[3];
@@ -74,15 +74,15 @@ void mcmc_stats(char * fname)
   nstep = 0;
   while(!feof(fp) && nstep < nmcmc)
   {
-    fscanf(fp, "%d", &nstep);
+    fscanf(fp, "%d", &istep);
     for(i=0; i<ntheta; i++)
     {
-      fscanf(fp, "%lf", &theta[i][istep]);
+      fscanf(fp, "%lf", &theta[i][nstep]);
     }
-    fscanf(fp,"%lf %lf\n", &tmp, &tmp);
-    istep++;
+    fscanf(fp,"%lf %lf\n", &tmp);
+    nstep++;
   }
-  printf("nstep: %d\n", istep);
+  printf("nstep: %d\n", nstep);
   if(nstep <= nbuilt)
   {
     strcpy(str_error_exit, "mcmc.txt");
@@ -97,16 +97,29 @@ void mcmc_stats(char * fname)
     theta_best_var[i*2] = gsl_stats_quantile_from_sorted_data(&theta[i][nbuilt-1], 1, nmcmc-nbuilt, 0.1585);
     theta_best_var[i*2+1] = gsl_stats_quantile_from_sorted_data(&theta[i][nbuilt-1], 1, nmcmc-nbuilt, 1.0-0.1585);
 
+    err_max1 = (theta_best[i] - theta_range[i][0])/2.35;
+    err_max2 = (theta_range[i][1] - theta_best[i])/2.35;
+
     theta_best_var[i*2] = theta_best[i] - theta_best_var[i*2];
     theta_best_var[i*2+1] -= theta_best[i];
 
+    theta_best_var[i*2] = min( theta_best_var[i*2], err_max1 );
+    theta_best_var[i*2+1] = min( theta_best_var[i*2+1], err_max2 );
+
+
     printf("Sts: %d %f %f %f\n", i, theta_best[i], theta_best_var[i*2], theta_best_var[i*2+1]);
 
-    /*par_fit(&theta[i][nbuilt-1], nmcmc-nbuilt, pars);
+    par_fit(&theta[i][nbuilt-1], nmcmc-nbuilt, pars);
 
-    printf("Fit: %d %f %f %f\n", i, pars[1], pars[2], pars[2]);
     theta_best[i] = pars[1];
-    theta_best_var[i*2] = theta_best_var[i*2+1] = pars[2];*/
+
+    err_max1 = (theta_best[i] - theta_range[i][0])/2.35;
+    err_max2 = (theta_range[i][1] - theta_best[i])/2.35;
+
+    theta_best_var[i*2] = min( pars[2], err_max1);
+    theta_best_var[i*2+1] = min(pars[2], err_max2);
+    printf("Fit: %d %f %f %f %f\n", i, theta_best[i], theta_best_var[i*2], theta_best_var[i*2+1], err_max1);
+
   }
   
   fclose(fp);
