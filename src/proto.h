@@ -46,7 +46,7 @@ void mcmc_conline_run();
 void get_cov_matrix(double *theta, int nstep, int ntheta);
 void get_cov_matrix_diag(double *theta, int nstep, int ntheta);
 void mcmc_stats(char *);
-int par_fit(double *theta, int n, double *p);
+int par_fit(double *theta, int n, double percent, double *p);
 int fitfunc(int m, int n, double *p, double *dy, double **devc, void *vars);
 
 // transferfunc.o

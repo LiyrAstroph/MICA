@@ -85,7 +85,7 @@ void transfer_function(double *theta)
       err1 = theta_best_var[(3+j)*2];
       err2 = theta_best_var[2*2]/w;
       err3 = pow( (tau - grid_tau[j])/w, 2.0 ) * err2;
-      dlnphii = err1; //sqrt(pow(err1, 2.0) + pow(err2, 2.0) + pow(err3, 2.0));
+      dlnphii = sqrt(pow(err1, 2.0) + pow(err2, 2.0) + pow(err3, 2.0));
       phi1 += exp(log(phii) - dlnphii);
 
       //phi1 += exp(theta[3+j]-theta_best_var[(3+j)*2])/sqrt(2.0*PI)/(w )   
@@ -96,7 +96,7 @@ void transfer_function(double *theta)
       err1 = theta_best_var[(3+j)*2+1];
       err2 = theta_best_var[2*2+1]/w;
       err3 = pow( (tau - grid_tau[j])/w, 2.0 ) * err2;
-      dlnphii = err1;//sqrt(pow(err1, 2.0) + pow(err2, 2.0) + pow(err3, 2.0));
+      dlnphii = sqrt(pow(err1, 2.0) + pow(err2, 2.0) + pow(err3, 2.0));
       phi2 += exp(log(phii) + dlnphii);
       phierr += pow(phii * dlnphii, 2.0);
 

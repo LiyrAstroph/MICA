@@ -17,7 +17,7 @@ void mcmc_conline_run()
   strcpy(fname_mcmc, "data/mcmc.txt");
 
   mcmc_conline_init();
-  mcmc_sampling(fname_mcmc, &probability_conline);
+//  mcmc_sampling(fname_mcmc, &probability_conline);
   mcmc_stats(fname_mcmc);
   reconstruct_conline();
   transfer_function(theta_best);

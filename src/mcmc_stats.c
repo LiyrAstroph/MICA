@@ -50,7 +50,7 @@ void get_cov_matrix_diag(double *theta, int nstep, int ntheta)
 void mcmc_stats(char * fname)
 {
   FILE *fp;
-  double **theta, tmp, err_max1, err_max2;
+  double **theta, tmp, err_max1, err_max2, theta_up, theta_low, percent;
   int i, j, nstep, istep, status;
   char buf[1000], *pstr, buf1[100];
   double pars[3];
@@ -92,38 +92,32 @@ void mcmc_stats(char * fname)
     gsl_sort(&theta[i][nbuilt-1], 1, nmcmc-nbuilt);
     //printf("ss:%f %f %f\n", theta[i*n_mcmc + 40000], theta[i*n_mcmc+ 40100], theta[i*n_mcmc+ 40200]);
     theta_best[i] = gsl_stats_mean(&theta[i][nbuilt-1], 1, nmcmc-nbuilt);
-    theta_best_var[i*2] = gsl_stats_quantile_from_sorted_data(&theta[i][nbuilt-1], 1, nmcmc-nbuilt, 0.1585);
-    theta_best_var[i*2+1] = gsl_stats_quantile_from_sorted_data(&theta[i][nbuilt-1], 1, nmcmc-nbuilt, 1.0-0.1585);
+    theta_low = gsl_stats_quantile_from_sorted_data(&theta[i][nbuilt-1], 1, nmcmc-nbuilt, 0.1585);
+    theta_up = gsl_stats_quantile_from_sorted_data(&theta[i][nbuilt-1], 1, nmcmc-nbuilt, 1.0-0.1585);
 
     err_max1 = (theta_best[i] - theta_range[i][0])/2.35;
     err_max2 = (theta_range[i][1] - theta_best[i])/2.35;
 
-    theta_best_var[i*2] = theta_best[i] - theta_best_var[i*2];
-    theta_best_var[i*2+1] -= theta_best[i];
 
-    theta_best_var[i*2] = min( theta_best_var[i*2], err_max1 );
-    theta_best_var[i*2+1] = min( theta_best_var[i*2+1], err_max2 );
+    theta_best_var[i*2] = max(min( theta_best[i] - theta_low, err_max1 ), 0.0);
+    theta_best_var[i*2+1] = max( min( theta_up - theta_best[i], err_max2 ), 0.0);
 
 
     printf("Sts: %d %f %f %f\n", i, theta_best[i], theta_best_var[i*2], theta_best_var[i*2+1]);
 
-    status=par_fit(&theta[i][nbuilt-1], nmcmc-nbuilt, pars);
+    percent = 0.1;
+    if(i==3)
+      percent = 0.6;
+    status=par_fit(&theta[i][nbuilt-1], nmcmc-nbuilt, percent, pars);
 
-    if(status == 1)
-    {
-      theta_best[i] = pars[1];
+    theta_best[i] = pars[1];
 
-      err_max1 = (theta_best[i] - theta_range[i][0])/2.35;
-      err_max2 = (theta_range[i][1] - theta_best[i])/2.35;
+    err_max1 = (theta_best[i] - theta_range[i][0])/2.35;
+    err_max2 = (theta_range[i][1] - theta_best[i])/2.35;
 
-      theta_best_var[i*2] = min( pars[2], err_max1);
-      theta_best_var[i*2+1] = min(pars[2], err_max2);
-      printf("Fit: %d %f %f %f %f\n", i, theta_best[i], theta_best_var[i*2], theta_best_var[i*2+1], err_max1);
-    }
-    else
-    {
-      printf("Fit no success, using mean values.\n");
-    }
+    theta_best_var[i*2] = max( min( theta_best[i] - theta_low, err_max1 ), 0.0);
+    theta_best_var[i*2+1] = max( min( theta_up - theta_best[i], err_max2 ), 0.0);
+    printf("Fit: %d %f %f %f %f\n", i, theta_best[i], theta_best_var[i*2], theta_best_var[i*2+1], err_max1);
 
   }
   
@@ -138,8 +132,8 @@ struct vars_struct
 {
   double *x, *y;// *ey;
 };
-const int  nh=100;
-int par_fit(double *theta, int n, double *pfit)
+const int  nh=50;
+int par_fit(double *theta, int n, double percent, double *pfit)
 {
   int i, j, jmax, np;
   double hmax, hmin, hcen, pcen, pmax, weight;
@@ -174,7 +168,7 @@ int par_fit(double *theta, int n, double *pfit)
   np = 0;
   for(i=0; i<nh; i++)
   {
-    if(hist->bin[i] >= 0.8*pmax)
+    if(hist->bin[i] >= 0.9*pmax || fabs(i-jmax) < 5)
     {
       weight += hist->bin[i];
       pcen += hist->bin[i];
@@ -192,14 +186,13 @@ int par_fit(double *theta, int n, double *pfit)
   np = 0;
   for(i=0; i< nh; i++)
   {
-    if( hist->bin[i] >= 0.5*pcen )
+    if( hist->bin[i] >= percent*pcen )
     {
       x[np] = 0.5*(hist->range[i]+hist->range[i+1]);
       y[np] = hist->bin[i];
       np++;
     }
   }
-  printf("%d %f %f\n", np, x[0], x[np-1]);
   v.x = x;
   v.y = y;
   memset(&fitconfig, 0, sizeof(fitconfig));
@@ -210,9 +203,9 @@ int par_fit(double *theta, int n, double *pfit)
   fitconfig.maxiter = 1000;
     
   pars_set[0].limited[0] =  1;
-  pars_set[0].limits[0] = 1.0e-5;
+  pars_set[0].limits[0] = 0.0;
 
-  pars_set[1].limited[0] =  0;
+  pars_set[1].limited[0] =  1;
   pars_set[1].limits[0] = hmin;
   pars_set[1].limited[1] =  1;
   pars_set[1].limits[1] = hmax;
@@ -224,8 +217,8 @@ int par_fit(double *theta, int n, double *pfit)
 
   status = mpfit(&fitfunc, np, 3, pars, pars_set, &fitconfig, (void *)&v, &result);
   
-  printf("status: %d\n", status);
-  printf("%f %f %f\n", pars[0], pars[1], pars[2]);
+  printf("status: %d %f\n", status, pcen);
+  //printf("%f %f %f\n", pars[0], pars[1], pars[2]);
 
   memcpy(pfit, pars, 3*sizeof(double));
   
