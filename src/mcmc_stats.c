@@ -51,7 +51,7 @@ void mcmc_stats(char * fname)
 {
   FILE *fp;
   double **theta, tmp, err_max1, err_max2;
-  int i, j, nstep, istep;
+  int i, j, nstep, istep, status;
   char buf[1000], *pstr, buf1[100];
   double pars[3];
 
@@ -107,16 +107,23 @@ void mcmc_stats(char * fname)
 
     printf("Sts: %d %f %f %f\n", i, theta_best[i], theta_best_var[i*2], theta_best_var[i*2+1]);
 
-    par_fit(&theta[i][nbuilt-1], nmcmc-nbuilt, pars);
+    status=par_fit(&theta[i][nbuilt-1], nmcmc-nbuilt, pars);
 
-    theta_best[i] = pars[1];
+    if(status == 1)
+    {
+      theta_best[i] = pars[1];
 
-    err_max1 = (theta_best[i] - theta_range[i][0])/2.35;
-    err_max2 = (theta_range[i][1] - theta_best[i])/2.35;
+      err_max1 = (theta_best[i] - theta_range[i][0])/2.35;
+      err_max2 = (theta_range[i][1] - theta_best[i])/2.35;
 
-    theta_best_var[i*2] = min( pars[2], err_max1);
-    theta_best_var[i*2+1] = min(pars[2], err_max2);
-    printf("Fit: %d %f %f %f %f\n", i, theta_best[i], theta_best_var[i*2], theta_best_var[i*2+1], err_max1);
+      theta_best_var[i*2] = min( pars[2], err_max1);
+      theta_best_var[i*2+1] = min(pars[2], err_max2);
+      printf("Fit: %d %f %f %f %f\n", i, theta_best[i], theta_best_var[i*2], theta_best_var[i*2+1], err_max1);
+    }
+    else
+    {
+      printf("Fit no success, using mean values.\n");
+    }
 
   }
   
@@ -131,11 +138,11 @@ struct vars_struct
 {
   double *x, *y;// *ey;
 };
-const int  nh=10;
+const int  nh=100;
 int par_fit(double *theta, int n, double *pfit)
 {
-  int i, j;
-  double hmax, hmin;
+  int i, j, jmax, np;
+  double hmax, hmin, hcen, pcen, pmax, weight;
   gsl_histogram *hist = gsl_histogram_alloc(nh);
   
   struct vars_struct v;
@@ -152,14 +159,47 @@ int par_fit(double *theta, int n, double *pfit)
   {
     gsl_histogram_increment(hist, theta[j]);
   }
-    
-//  memcpy(x, hist->range, nh*sizeof(double));
-//  memcpy(y, hist->bin, nh*sizeof(double));
+
+  /*for(i=0; i<nh; i++)
+  {
+    printf("%f %f\n", hist->range[i], hist->bin[i]);
+  }*/
+
+  jmax = gsl_histogram_max_bin(hist);
+  pmax = hist->bin[jmax];
+
+  hcen = 0.0;
+  weight = 0.0;
+  pcen = 0.0;
+  np = 0;
   for(i=0; i<nh; i++)
   {
-    x[i] = 0.5*(hist->range[i]+hist->range[i+1]);
-    y[i] = hist->bin[i];
+    if(hist->bin[i] >= 0.8*pmax)
+    {
+      weight += hist->bin[i];
+      pcen += hist->bin[i];
+      hcen += hist->bin[i] * 0.5*(hist->range[i]+hist->range[i+1]);
+      np++;
+    }
   }
+  hcen /= weight;
+  pcen /= np;
+
+  pars[0] = pcen;
+  pars[1] = hcen;
+  pars[2] = gsl_histogram_sigma(hist);
+
+  np = 0;
+  for(i=0; i< nh; i++)
+  {
+    if( hist->bin[i] >= 0.5*pcen )
+    {
+      x[np] = 0.5*(hist->range[i]+hist->range[i+1]);
+      y[np] = hist->bin[i];
+      np++;
+    }
+  }
+  printf("%d %f %f\n", np, x[0], x[np-1]);
   v.x = x;
   v.y = y;
   memset(&fitconfig, 0, sizeof(fitconfig));
@@ -167,7 +207,7 @@ int par_fit(double *theta, int n, double *pfit)
   result.xerror = perr;
   memset(&pars_set[0], 0, sizeof(pars_set));
     
-  fitconfig.maxiter = 100;
+  fitconfig.maxiter = 1000;
     
   pars_set[0].limited[0] =  1;
   pars_set[0].limits[0] = 1.0e-5;
@@ -182,15 +222,15 @@ int par_fit(double *theta, int n, double *pfit)
     //pars[2].limited[1] =  1;
     //pars[2].limits[1] = (hmax - hmin);
 
-  pars[1] = gsl_histogram_mean(hist);
-  pars[2] = gsl_histogram_sigma(hist);
-  pars[0] = gsl_histogram_max_val(hist);
-
-  status = mpfit(&fitfunc, nh, 3, pars, pars_set, &fitconfig, (void *)&v, &result);
+  status = mpfit(&fitfunc, np, 3, pars, pars_set, &fitconfig, (void *)&v, &result);
   
+  printf("status: %d\n", status);
+  printf("%f %f %f\n", pars[0], pars[1], pars[2]);
+
   memcpy(pfit, pars, 3*sizeof(double));
   
   gsl_histogram_free(hist);
+  return status;
 }
 
 int fitfunc(int m, int n, double *p, double *dy, double **devc, void *vars)

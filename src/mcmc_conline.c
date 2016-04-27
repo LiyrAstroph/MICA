@@ -17,11 +17,10 @@ void mcmc_conline_run()
   strcpy(fname_mcmc, "data/mcmc.txt");
 
   mcmc_conline_init();
-//  mcmc_sampling(fname_mcmc, &probability_conline);
+  mcmc_sampling(fname_mcmc, &probability_conline);
   mcmc_stats(fname_mcmc);
   reconstruct_conline();
   transfer_function(theta_best);
-  printf("Prob: %f\n", probability_conline(theta_best));
   aicc = cal_aicc();
   line_convolution();
   fprintf(fp_results, "aicc: %d %f\n", nc, aicc);

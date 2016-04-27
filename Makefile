@@ -10,14 +10,14 @@
 
 SHELL=/bin/bash
 
-CC       = gcc -O2 -Wall -g
+CC       = gcc -O2 -Wall
 OPTIMIZE = 
 #-DJAVELINE
 #OPTIMIZE = -DTOPHAT
 
 #---------target system
-#SYSTEM="Darwin"
-SYSTEM="Linux"
+SYSTEM="Darwin"
+#SYSTEM="Linux"
 #SYSTEM="Cluster"
 
 ifeq ($(SYSTEM), "Darwin")
