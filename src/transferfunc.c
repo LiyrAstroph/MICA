@@ -42,7 +42,7 @@ void transfer_function(double *theta)
         phierr += pow(phii * dlnphii, 2.0);
       }
     }
-    fprintf(ftran, "%e %e %e %e\n", phi, sqrt(phierr), phi1, phi2);
+    fprintf(ftran, "%e %e %e %e\n", phi, phi1, phi2);
     TF[i] = phi;
   }
 #elif defined JAVELINE
@@ -53,7 +53,7 @@ void transfer_function(double *theta)
     phierr = 0.0;
     phi1 = phi2 = 0.0;
     fprintf(ftran, "%f ", tau);
-    fk = exp(theta[3]);
+    fk = theta[3];
     if( tau >= theta[4] - w &&  tau < theta[4] + w )
     {
       phii = fk/(2.0*w);
@@ -64,7 +64,7 @@ void transfer_function(double *theta)
       phi2 += exp(log(phii) + dlnphii);
       phierr += pow(phii * dlnphii, 2.0);
     }
-    fprintf(ftran, "%e %e %e %e\n", phi, sqrt(phierr), phi1, phi2);
+    fprintf(ftran, "%e %e %e\n", phi, phi1, phi2);
     TF[i] = phi;
   }
 #else

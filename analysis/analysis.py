@@ -6,13 +6,18 @@ from matplotlib.backends.backend_pdf import PdfPages
 
 pdf = PdfPages('hist.pdf')
 
-data = np.loadtxt("../data/mcmc_5.txt")
-nb = 20000
+data = np.loadtxt("../data/mcmc.txt")
+nb = 50000
 nt=data.shape[0]
+
+data[:, 1] = (data[:, 1] + 0.5*data[:, 2] - 0.5*np.log(2.0))/np.log(10.0)
+data[:, 2] = data[:, 2]/np.log(10.0)
+data[:, 4] = np.exp(data[:, 4])
+
 
 print(nt)
 
-nc = 5
+nc = 2
 
 par=np.zeros((nc+4, 3))
 
@@ -47,13 +52,13 @@ for i in range(1,nc+4+1):
 
   params = Parameters()
   idx = np.argmax(hist);
-  print(idx, hist[idx])
+  print(idx, hist[idx], )
   params.add('amp', value=np.max(hist), min=0.0)
-  params.add('cen', value=hist[idx], min=bin_centres[0], max=bin_centres[-1])
+  params.add('cen', value=bin_centres[idx], min=bin_centres[0], max=bin_centres[-1])
   params.add('wid', value=std, min=0.0)
-  idx = np.where( hist > np.max(hist)*0.1)
-  if(i==4):
-    idx = np.where( hist > np.max(hist)*0.5)
+  idx = np.where( hist > np.max(hist)*0.0)
+  #if(i==5):
+  #  idx = np.where( hist > np.max(hist)*0.5)
 
   out = minimize(residual, params, args=(bin_centres[idx[0]], hist[idx[0]], eps_data[idx[0]]), method='leastsq')
 
@@ -63,7 +68,8 @@ for i in range(1,nc+4+1):
 
   fig=plt.figure()
 
-  plt.plot(bin_centres, hist, label='Test data')
+  #plt.plot(bin_centres, hist, label='Test data')
+  plt.hist(data[nb:nt,i], normed=False, bins=100, range=hrange)
   plt.plot(bin_fit, hist_fit, label='Fitted data')
   
   print(np.min(data[nb:nt, i]), np.max(data[nb:nt, i]))

@@ -120,14 +120,14 @@ double probability_con(double *theta)//double sigmahat, double taud, double alph
 
 /* penalize on larger tau than the length of continuum */ 
   prior = 0.0; 
-  if(theta[1] > log(len_con))
+  prior += - theta[0];
+  if(theta[1] > log(cad_con) )
   {
-    prior = (log(len_con) - theta[1])/fabs(log(cad_con));
+    prior = ( log(cad_con) - theta[1]);
   }
-  
-  if(theta[1] < log(cad_con) )
+  else
   {
-    prior = (theta[1] - log(cad_con))/fabs(log(cad_con));
+    prior +=  - (log(cad_con) - theta[1]);
   }
   return prob + prior;  
 }

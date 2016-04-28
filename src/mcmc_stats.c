@@ -92,6 +92,7 @@ void mcmc_stats(char * fname)
     gsl_sort(&theta[i][nbuilt-1], 1, nmcmc-nbuilt);
     //printf("ss:%f %f %f\n", theta[i*n_mcmc + 40000], theta[i*n_mcmc+ 40100], theta[i*n_mcmc+ 40200]);
     theta_best[i] = gsl_stats_mean(&theta[i][nbuilt-1], 1, nmcmc-nbuilt);
+    //theta_best[i] = gsl_stats_quantile_from_sorted_data(&theta[i][nbuilt-1], 1, nmcmc-nbuilt, 0.500);
     theta_low = gsl_stats_quantile_from_sorted_data(&theta[i][nbuilt-1], 1, nmcmc-nbuilt, 0.1585);
     theta_up = gsl_stats_quantile_from_sorted_data(&theta[i][nbuilt-1], 1, nmcmc-nbuilt, 1.0-0.1585);
 
@@ -105,7 +106,7 @@ void mcmc_stats(char * fname)
 
     printf("Sts: %d %f %f %f\n", i, theta_best[i], theta_best_var[i*2], theta_best_var[i*2+1]);
 
-    percent = 0.1;
+    /*percent = 0.0;
     if(i==3)
       percent = 0.6;
     status=par_fit(&theta[i][nbuilt-1], nmcmc-nbuilt, percent, pars);
@@ -117,7 +118,7 @@ void mcmc_stats(char * fname)
 
     theta_best_var[i*2] = max( min( theta_best[i] - theta_low, err_max1 ), 0.0);
     theta_best_var[i*2+1] = max( min( theta_up - theta_best[i], err_max2 ), 0.0);
-    printf("Fit: %d %f %f %f %f\n", i, theta_best[i], theta_best_var[i*2], theta_best_var[i*2+1], err_max1);
+    printf("Fit: %d %f %f %f %f\n", i, theta_best[i], theta_best_var[i*2], theta_best_var[i*2+1], err_max1);*/
 
   }
   

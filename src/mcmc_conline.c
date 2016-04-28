@@ -17,7 +17,7 @@ void mcmc_conline_run()
   strcpy(fname_mcmc, "data/mcmc.txt");
 
   mcmc_conline_init();
-//  mcmc_sampling(fname_mcmc, &probability_conline);
+  mcmc_sampling(fname_mcmc, &probability_conline);
   mcmc_stats(fname_mcmc);
   reconstruct_conline();
   transfer_function(theta_best);
@@ -44,8 +44,8 @@ void mcmc_conline_init()
   theta_range[2][0] = (tau_lim_up - tau_lim_low)/1000.0;
   theta_range[2][1] = (tau_lim_up - tau_lim_low)*10.0;
   
-  theta_range[3][0] = log(1.0e-10);
-  theta_range[3][1] = log(100.0);
+  theta_range[3][0] = 0.0;
+  theta_range[3][1] = 1.0e3;
 
   theta_range[4][0] = tau_lim_low;
   theta_range[4][1] = tau_lim_up;
@@ -64,8 +64,8 @@ void mcmc_conline_init()
   theta_input[0] = theta_best[0];
   theta_input[1] = theta_best[1];
   theta_input[2] = (tau_lim_up-tau_lim_low)/5.0;
-  theta_input[4] = (tau_lim_up-tau_lim_low)/10.0;
-  theta_input[3] = 2.0/theta_input[4];
+  theta_input[3] = 1.0;
+  theta_input[4] = (tau_lim_up-tau_lim_low)/2.0;
   theta_input[5] = log(10.0);
   
 #else
@@ -240,18 +240,34 @@ double probability_conline(double *theta)
   
   prob -= 0.5*(lndet_C + lndet_ICq);
 
-  prior = -0.5*pow(theta[0] - theta_best_con[0], 2.0)/pow(0.5*(theta_best_var_con[0*2]+theta_best_var_con[0*2+1]), 2.0);
- 
+  prior = 0.0;
+// for sigmad  
+  if( theta[0] < theta_best_con[0])
+  {
+    prior += -0.5*pow(theta[0] - theta_best_con[0], 2.0)/pow(theta_best_var_con[0*2], 2.0);
+  }
+  else
+  {
+    prior += -0.5*pow(theta[0] - theta_best_con[0], 2.0)/pow(theta_best_var_con[0*2+1], 2.0);
+  }
+// for taud
+  if( theta[1] < theta_best_con[1])
+  {
+    prior += -0.5*pow(theta[1] - theta_best_con[1], 2.0)/pow(theta_best_var_con[1*2], 2.0);
+  }
+  else
+  {
+    prior += -0.5*pow(theta[1] - theta_best_con[1], 2.0)/pow(theta_best_var_con[1*2+1], 2.0);
+  }
 //penalize very large tau or very small tau  
-  if(theta[1] > log(len_con) )
+/*  if(theta[1] > log(len_con) )
   {
     prior += (log(len_con) - theta[1])/fabs(log(cad_con));
   }
   if(theta[1] < log(cad_con))
   {
     prior += (theta[1] - log(cad_con) ) / fabs(log(cad_con));
-  }
-  prior += -0.5*pow(theta[1] - theta_best_con[1], 2.0)/pow(0.5*(theta_best_var_con[1*2]+theta_best_var_con[1*2+1]), 2.0);
+  }*/
   
   prob += prior;
   return prob;
@@ -393,7 +409,7 @@ void set_covar_mat(double *theta)
   //alpha = 1.0;
   taud = exp(theta[1]);
   sigma = exp(theta[0]) * sqrt(taud/2.0);
-  syserr = exp(theta[ntheta-1]);
+  syserr = 0.0; //exp(theta[ntheta-1]);
 
 // first con-con
   for(i=0; i<ncon_data; i++)
@@ -570,7 +586,7 @@ double Slc(double tcon, double tline, double *theta)
   Stot *= (taud/2.0/w);
 #elif defined JAVELINE 
   tauk = theta[4]; //theta[3+nc+i];
-  fk = exp(theta[3]);
+  fk = theta[3];
   DT = Dt - tauk;
   if(DT < -w)
   {
@@ -649,11 +665,11 @@ double Sll(double ti, double tj, double *theta)
   for(k=0; k<1; k++)
   {
     tauk = theta[3+k+1]; //theta[3+nc+k];
-    fk = exp(theta[3+k]);
+    fk = theta[3+k];
     for(m=0; m<1; m++)
     {
       taum = theta[3+m+1]; //theta[3+nc+m];
-      fm = exp(theta[3+m]);
+      fm = theta[3+m];
 
       DT = Dt - (tauk-taum);
 

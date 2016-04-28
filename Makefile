@@ -12,8 +12,8 @@ SHELL=/bin/bash
 
 CC       = gcc -O2 -Wall
 OPTIMIZE = 
-#-DJAVELINE
-#OPTIMIZE = -DTOPHAT
+OPTIMIZE += -DJAVELINE
+#OPTIMIZE += -DTOPHAT
 
 #---------target system
 #SYSTEM="Darwin"

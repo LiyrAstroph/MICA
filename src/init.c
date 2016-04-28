@@ -20,7 +20,9 @@ void init()
   nall = ncon + nline;
   nall_data = ncon_data + nline_data;
   memory_alloc();
-  scale_light_curves();
+
+  scale_con = scale_line = 1.0;
+//  scale_light_curves();
 
   memcpy(Fall_data, Fcon_data, ncon_data*sizeof(double));
   memcpy(Fall_data+ncon_data, Fline_data, nline_data*sizeof(double));
@@ -76,8 +78,6 @@ void scale_light_curves()
   int i;
   double mean, norm;
   
-  scale_con = scale_line = 1.0;
-
   mean = 0.0;
   norm = 0.0;
   for(i=0; i<ncon_data; i++)
