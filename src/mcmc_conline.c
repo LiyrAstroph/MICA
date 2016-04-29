@@ -85,7 +85,7 @@ void mcmc_conline_init()
   theta_range[i][0] = log(1.0);
   theta_range[i++][1] = log(1.0e4);
 
-  theta_range[i][0] = (tau_lim_up - tau_lim_low)/(nc-1.0)/10.0;
+  theta_range[i][0] = (tau_lim_up - tau_lim_low)/(nc-1.0)/1000.0;
   theta_range[i++][1] = (tau_lim_up - tau_lim_low)/(nc-1.0);
   for(j=0; j<nc; j++)
   {
@@ -409,7 +409,7 @@ void set_covar_mat(double *theta)
   //alpha = 1.0;
   taud = exp(theta[1]);
   sigma = exp(theta[0]) * sqrt(taud/2.0);
-  syserr = 0.0; //exp(theta[ntheta-1]);
+  syserr = exp(theta[ntheta-1]);
 
 // first con-con
   for(i=0; i<ncon_data; i++)

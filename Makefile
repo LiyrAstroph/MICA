@@ -12,7 +12,7 @@ SHELL=/bin/bash
 
 CC       = gcc -O2 -Wall
 OPTIMIZE = 
-OPTIMIZE += -DJAVELINE
+#OPTIMIZE += -DJAVELINE
 #OPTIMIZE += -DTOPHAT
 
 #---------target system

@@ -105,7 +105,7 @@ int mcmc_sampling(char *fname_mcmc, double (* prob_fun)(double *theta))
     
     if(istep%n_cov_update == 0)
     {
-      get_cov_matrix(theta_mcmc, n_cov_update, ntheta);
+      get_cov_matrix_diag(theta_mcmc, n_cov_update, ntheta);
       memcpy(var_cov_mat, cov_matrix, ntheta*ntheta*sizeof(double));
       display_mat(var_cov_mat, ntheta, ntheta);
       memcpy(Pmatrix, var_cov_mat, ntheta*ntheta*sizeof(double));

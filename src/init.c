@@ -22,7 +22,7 @@ void init()
   memory_alloc();
 
   scale_con = scale_line = 1.0;
-//  scale_light_curves();
+  scale_light_curves();
 
   memcpy(Fall_data, Fcon_data, ncon_data*sizeof(double));
   memcpy(Fall_data+ncon_data, Fline_data, nline_data*sizeof(double));
