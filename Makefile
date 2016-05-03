@@ -16,8 +16,8 @@ OPTIMIZE =
 #OPTIMIZE += -DTOPHAT
 
 #---------target system
-#SYSTEM="Darwin"
-SYSTEM="Linux"
+SYSTEM="Darwin"
+#SYSTEM="Linux"
 #SYSTEM="Cluster"
 
 ifeq ($(SYSTEM), "Darwin")
@@ -62,7 +62,8 @@ INCL     = Makefile $(SRC)/allvars.h $(SRC)/proto.h
 
 OBJS  = $(SRC)/main.o $(SRC)/readparam.o $(SRC)/allvars.o $(SRC)/error.o $(SRC)/run.o \
         $(SRC)/init.o $(SRC)/mathfunc.o $(SRC)/mcmc_con.o $(SRC)/mcmc_stats.o         \
-        $(SRC)/mcmc_conline.o $(SRC)/mcmc.o $(SRC)/transferfunc.o $(SRC)/lineconv.o $(SRC)/test.o
+        $(SRC)/mcmc_conline.o $(SRC)/mcmc.o $(SRC)/transferfunc.o $(SRC)/lineconv.o   \
+        $(SRC)/sim.o $(SRC)/test.o
 
 $(EXEC): $(OBJS)
 	cd $(SRC)

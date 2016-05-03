@@ -55,6 +55,11 @@ void transfer_function(double *theta);
 // lineconv.o
 void line_convolution();
 
+// sim.c
+void set_covar_Simmat(double sigma, double tau, double alpha);
+void simulate_con_init();
+void simulate_con(double sigma, double tau, double alpha, double ave_con);
+
 //test.c
 void test();
 

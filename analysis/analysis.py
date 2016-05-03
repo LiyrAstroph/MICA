@@ -7,17 +7,16 @@ from matplotlib.backends.backend_pdf import PdfPages
 pdf = PdfPages('hist.pdf')
 
 data = np.loadtxt("../data/mcmc.txt")
-nb = 50000
+nb = 20000
 nt=data.shape[0]
 
 data[:, 1] = (data[:, 1] + 0.5*data[:, 2] - 0.5*np.log(2.0))/np.log(10.0)
 data[:, 2] = data[:, 2]/np.log(10.0)
-data[:, 4] = np.exp(data[:, 4])
 
 
 print(nt)
 
-nc = 2
+nc = 11
 
 par=np.zeros((nc+4, 3))
 
