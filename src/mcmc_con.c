@@ -15,8 +15,16 @@ void mcmc_con_run()
   strcpy(fname_mcmc, "data/mcmc_con.txt");
 
   mcmc_con_init();
-  mcmc_sampling(fname_mcmc, &probability_con);
-  mcmc_stats(fname_mcmc);
+  if(flag_mcmc==1)
+  {
+    mcmc_sampling(fname_mcmc, &probability_con);
+    mcmc_stats(fname_mcmc);
+  }
+  else
+  {
+    read_input();
+  }
+  
   reconstruct_con();
 
   memcpy(theta_best_con, theta_best, ntheta*sizeof(double));

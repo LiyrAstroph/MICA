@@ -27,7 +27,7 @@ extern const int ntheta_max;
 extern int ntheta;
 extern int nmcmc, nbuilt;
 extern double *workspace;
-extern int flag_detrend, flag_sim;
+extern int flag_detrend, flag_sim, flag_mcmc;
 extern double *Cmat, *ICmat, *Smat, *Nmat, *USmat, *ASmat;
 extern double *ICvmat, *Tmat1, *Tmat2, *Tmat3, *Tmat4;
 

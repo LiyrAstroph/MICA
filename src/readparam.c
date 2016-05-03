@@ -224,6 +224,31 @@ void read_param()
   }
   flag_sim=atoi(buf2);
   printf("%d\n", flag_sim);    
+
+//*******************************************
+// read flag for mcmc.
+  buf1[0]='%';
+  while(buf1[0]=='%')
+  {
+    if(feof(fp))
+    {
+      error_exit(5);
+    }
+
+    fgets(buf, 200, fp);
+    if(sscanf(buf, "%s%s%s", buf1, buf2, buf3)<1)
+    {
+      buf1[0]='%';
+    }
+  }
+  if(strcmp(buf1, "flag_mcmc")!=0)
+  {
+    strcat(buf1, ". expecting flag_mcmc");
+    strcpy(str_error_exit, buf1);
+    error_exit(3);
+  }
+  flag_mcmc=atoi(buf2);
+  printf("%d\n", flag_mcmc);    
 }
 
 /*
@@ -299,4 +324,27 @@ void read_data()
   nline_data = i;
   printf("nline_data: %d\n", nline_data); 
   fclose(fp); 
+}
+
+void read_input()
+{
+  FILE *fp;
+  int i;
+  char *fname[100];
+
+  strcpy(fname, "data/par.txt");
+
+  fp = fopen(fname, "r");
+  if(fp==NULL)
+  {
+    strcpy(str_error_exit, fname);
+    error_exit(2);
+  }
+
+  for(i=0; i<nc+3+1; i++)
+  {
+    fscanf(fp, "%lf %lf %lf\n", &theta_best[i], &theta_best_var[i*2], &theta_best_var[i*2+1]);
+  }
+
+  fclose(fp);
 }

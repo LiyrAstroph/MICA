@@ -7,12 +7,13 @@
 data/con_test.txt                  % light curve 1
 data/line_test.txt                 % light curve 2
 
-taulim               0.0   30.0    % range of time lag
+taulim               0.0   10.0    % range of time lag
 nc                   10            % number of Gaussians or top-hats
 
 nmcmc   50000                      % mcmc length
 nbuilt  20000                      % built-in length
  
 flag_detrend         0             % 1 for detrending; 
-flag_sim             1             % 1 for simulations only; 0 for mcmcm implementationo
+flag_sim             0             % 1 for simulations only; 0 for mcmcm implementationo
+flag_mcmc            0             % 0 for reading parameters from data/par.txt
 %%

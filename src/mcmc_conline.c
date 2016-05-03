@@ -17,8 +17,15 @@ void mcmc_conline_run()
   strcpy(fname_mcmc, "data/mcmc.txt");
 
   mcmc_conline_init();
-  mcmc_sampling(fname_mcmc, &probability_conline);
-  mcmc_stats(fname_mcmc);
+  if(flag_mcmc==1)
+  {
+    mcmc_sampling(fname_mcmc, &probability_conline);
+    mcmc_stats(fname_mcmc);
+  }
+  else
+  {
+    read_input();
+  }
   reconstruct_conline();
   transfer_function(theta_best);
   aicc = cal_aicc();

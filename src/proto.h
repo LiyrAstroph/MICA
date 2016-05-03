@@ -6,6 +6,7 @@ void run();
 //read_param.c
 void read_param();
 void read_data();
+void read_input();
 
 //init.c
 void init();
