@@ -10,6 +10,14 @@ void run()
   read_param();
   init();
 //  test();//
-  mcmc_con_run();
-  mcmc_conline_run();
+  if(flag_sim)
+  {
+    simulate_con(0.6, 100.0, 1.0, 10.0);
+    simulate_line();
+  }
+  else
+  {
+    mcmc_con_run();
+    mcmc_conline_run();
+  }
 }

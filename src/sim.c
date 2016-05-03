@@ -153,50 +153,48 @@ void set_covar_Simmat(double sigma, double tau, double alpha)
 void simulate_line()
 {
   int i, j;
-  double flux, err, tline, tcon, taup, dt, norm, fcon, fcon_err;
-  double *tf, *tau, dtau, sig;
+  double flux, err, tline, tcon, taup, norm, fcon, fcon_err;
+  double dtau, sig;
   int type=1;
 
-  tf = array_malloc(ntau);
-  tau = array_malloc(ntau);
   dtau = 30.0/(ntau-1.0);
   for(i=0; i<ntau; i++)
   {
-    tau[i] =  dtau * i;
-    tf[i] = 0.0;
+    TF_tau[i] =  dtau * i;
+    TF[i] = 0.0;
   }
 // top-hat transfer function
   FILE *ftf;
-  ftf=fopen("data/sim_tf.txt", "w");
+  ftf=fopen("data/transfer_sim.txt", "w");
   norm = 0.0;
   for(i=0; i<ntau; i++)
   {
     if(type==0)  // two top-hats
     {
-      if(tau[i]<=5.0)
-        tf[i] = 0.0;
-      else if(tau[i]<10.0)
-        tf[i] = 1.0;
-      else if(tau[i]<15.0)
-        tf[i] = 0.0;
-      else if(tau[i]<20.0)
-        tf[i] = 2.0;
+      if(TF_tau[i]<=5.0)
+        TF[i] = 0.0;
+      else if(TF_tau[i]<10.0)
+        TF[i] = 1.0;
+      else if(TF_tau[i]<15.0)
+        TF[i] = 0.0;
+      else if(TF_tau[i]<20.0)
+        TF[i] = 2.0;
       else
-        tf[i] = 0.0;
+        TF[i] = 0.0;
 
-      norm += tf[i] * dtau;
+      norm += TF[i] * dtau;
     }
     if(type==1) // two Gaussians
     {
       sig = 2.5;
-      tf[i] = exp(-0.5*pow(tau[i]-10.0, 2.0)/sig/sig) + exp(-0.5*pow(tau[i]-17.0, 2.0)/sig/sig);
-      norm += tf[i] * dtau;
+      TF[i] = exp(-0.5*pow(TF_tau[i]-10.0, 2.0)/sig/sig) + exp(-0.5*pow(TF_tau[i]-17.0, 2.0)/sig/sig);
+      norm += TF[i] * dtau;
     }
   }
   for(i=0; i<ntau; i++)
   {
-    tf[i] /= norm;
-    fprintf(ftf, "%f %f\n", tau[i], tf[i]);
+    TF[i] /= norm;
+    fprintf(ftf, "%f %f\n", TF_tau[i], TF[i]);
   }
   fclose(ftf);
 
@@ -210,14 +208,14 @@ void simulate_line()
     tline = Tline[i]; //4540.0 + 70.0/(nline_data-1.0) * i;
     for(j=0; j<ntau; j++)
     {
-      taup = tau[j];
+      taup = TF_tau[j];
       tcon = tline - taup;
       if(tcon >=Tcon[0] && tcon <= Tcon[n_con_sim-1])
       {
         fcon = gsl_interp_eval(gsl_linear, Tcon, Fcon, tcon, gsl_acc);
         fcon_err = gsl_interp_eval(gsl_linear_error, Tcon, Fcerrs, tcon, gsl_acc_error);
-        flux += fcon * tf[j];
-        err += pow(fcon_err *tf[j] * dtau, 2);
+        flux += fcon * TF[j];
+        err += pow(fcon_err *TF[j] * dtau, 2);
       }
     }
     flux *= dtau;

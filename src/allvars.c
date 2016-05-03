@@ -20,7 +20,7 @@ const int ntheta_max = 50;
 int ntheta;
 int nmcmc, nbuilt;
 double *workspace;
-int flag_detrend;
+int flag_detrend, flag_sim;
 double *Cmat, *ICmat, *Smat, *Nmat, *USmat, *ASmat;
 double *ICvmat, *Tmat1, *Tmat2, *Tmat3, *Tmat4;
 

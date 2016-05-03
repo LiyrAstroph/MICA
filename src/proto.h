@@ -41,6 +41,7 @@ int mcmc_sampling(char *fname_mcmc, double (* prob_fun)(double *) );
 void mcmc_conline_init();
 void mcmc_conline_sampling();
 void mcmc_conline_run();
+void simulate_line();
 
 //mcmc_stats.c
 void get_cov_matrix(double *theta, int nstep, int ntheta);

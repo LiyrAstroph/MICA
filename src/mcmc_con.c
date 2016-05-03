@@ -15,7 +15,7 @@ void mcmc_con_run()
   strcpy(fname_mcmc, "data/mcmc_con.txt");
 
   mcmc_con_init();
-//  mcmc_sampling(fname_mcmc, &probability_con);
+  mcmc_sampling(fname_mcmc, &probability_con);
   mcmc_stats(fname_mcmc);
   reconstruct_con();
 
