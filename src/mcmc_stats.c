@@ -50,10 +50,8 @@ void get_cov_matrix_diag(double *theta, int nstep, int ntheta)
 void mcmc_stats(char * fname)
 {
   FILE *fp;
-  double **theta, tmp, err_max1, err_max2, theta_up, theta_low, percent;
-  int i, j, nstep, istep, status;
-  char buf[1000], *pstr, buf1[100];
-  double pars[3];
+  double **theta, tmp, err_max1, err_max2, theta_up, theta_low;
+  int i, nstep, istep;
 
   theta = malloc(ntheta*sizeof(double));
   for(i=0; i<ntheta; i++)
@@ -231,11 +229,10 @@ int fitfunc(int m, int n, double *p, double *dy, double **devc, void *vars)
 {
   int i;
   struct vars_struct *v = (struct vars_struct *) vars;
-  double *x, *y, *ey, f;
+  double *x, *y, f;
 
   x = v->x;
   y = v->y;
-  //ey = v->ey;
 
   for (i=0; i<m; i++) {
     f = p[0] * exp(-0.5*pow(x[i] - p[1], 2.0)/p[2]/p[2]);

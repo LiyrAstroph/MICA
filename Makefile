@@ -50,6 +50,8 @@ GSL_INCL = -I/mbh/mbhd01/soft/gsl/include
 GSL_LIBS = -L/mbh/mbhd01/soft/gsl/lib  -lgsl -lgslcblas -lm
 LAPACK_INCL = -I/mbh/mbhd01/user/liyanrong/soft/lapack/include
 LAPACK_LIBS = -L/mbh/mbhd01/user/liyanrong/soft/lapack/lib -llapacke -llapack -lblas -lgfortran
+MPFIT_LIBS = -L/mbh/mbhd01/user/liyanrong/soft/mpfit -lmpfit
+MPFIT_INCS = -I /mbh/mbhd01/user/liyanrong/soft/mpfit
 endif
 
 OPTIONS  = $(OPTIMIZE)
@@ -70,3 +72,7 @@ $(EXEC): $(OBJS)
 	$(CC) $(OPTIMIZE) $(OBJS) $(LIBS) -o $@
 
 $(OBJS): $(INCL)
+
+
+clean:
+	rm $(SRC)/*.o $(EXEC)
