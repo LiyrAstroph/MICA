@@ -11,7 +11,7 @@
 #include "allvars.h"
 #include "proto.h" 
 
-#define SNR (120.0)
+#define SNR (40.0)
 int n_con_sim=301, n_line_sim=301;
 double sim_error=10.0*1.0/SNR, sim_rel_error=1.0/SNR;
 
@@ -60,9 +60,10 @@ void simulate_con(double sigma, double tau, double alpha, double ave_con)
 //   multiply_matvec(Peigens_mat, Prandvec, n_con_sim, Pybuf);
 //   multiply_matvec(Peigens_vecs, Pybuf, n_con_sim, Py);
 
+  gsl_rng_set(gsl_r_sim, time(NULL));
   for(i=0;i<n_con_sim;i++)
   {
-    Fcon[i] = Py[i] + ave_con;
+    Fcon[i] = Py[i] + ave_con + sim_error * gsl_ran_gaussian(gsl_r_sim, 1.0);
     Fcerrs[i] = sim_error;
   }
   
@@ -123,8 +124,8 @@ void simulate_con_init()
 
   gsl_T_sim = gsl_rng_default;
   gsl_r_sim = gsl_rng_alloc (gsl_T_sim);
-  //gsl_rng_set(gsl_r_sim, 12);  // time(NULL)
-  gsl_rng_set(gsl_r_sim, time(NULL)); 
+  gsl_rng_set(gsl_r_sim, 12); 
+  //gsl_rng_set(gsl_r_sim, time(NULL)); 
 
   return;
 }
@@ -143,7 +144,7 @@ void set_covar_Simmat(double sigma, double tau, double alpha)
       PSmat[i*n_con_sim+j] = sigma*sigma* exp (- pow (fabs(t1-t2) / tau, alpha));
       PSmat[j*n_con_sim+i] = PSmat[i*n_con_sim+j];
     }
-    nerr = sim_error;
+    nerr = 0.0; //sim_error;
     PSmat[i*n_con_sim+i] += nerr * nerr;
   }
   return;
@@ -187,7 +188,7 @@ void simulate_line()
     if(type==1) // two Gaussians
     {
       sig = 2.5;
-      TF[i] = exp(-0.5*pow(TF_tau[i]-10.0, 2.0)/sig/sig) + exp(-0.5*pow(TF_tau[i]-17.0, 2.0)/sig/sig);
+      TF[i] = exp(-0.5*pow(TF_tau[i]-10.0, 2.0)/sig/sig) + exp(-0.5*pow(TF_tau[i]-18.0, 2.0)/sig/sig);
       norm += TF[i] * dtau;
     }
   }
@@ -224,7 +225,7 @@ void simulate_line()
     Flerrs[i] = sim_error;
   }
 
-  
+  gsl_rng_set(gsl_r_sim, time(NULL)); // reset the seed of the random generator
   for(i=0; i<n_line_sim; i++)
   {
     if(Tline[i]>170.0)

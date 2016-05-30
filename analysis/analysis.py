@@ -7,16 +7,17 @@ from matplotlib.backends.backend_pdf import PdfPages
 
 pdf = PdfPages('hist.pdf')
 
+nbin = 50
 ntau = 100
 tau1 = 0.0
-tau2 = 10.0
+tau2 = 50.0
 nc = 4
 nb = 20000
-data = np.loadtxt("../data/mcmc_4.txt", skiprows=nb)
+data = np.loadtxt("../data/mcmc.txt", skiprows=nb)
 nt=data.shape[0]
 
-data[:, 1] = (data[:, 1] + 0.5*data[:, 2] - 0.5*np.log(2.0))/np.log(10.0)
-data[:, 2] = data[:, 2]/np.log(10.0)
+#data[:, 1] = (data[:, 1] + 0.5*data[:, 2] - 0.5*np.log(2.0))/np.log(10.0)
+#data[:, 2] = data[:, 2]/np.log(10.0)
 
 
 print(nt)
@@ -48,7 +49,7 @@ for i in range(1,nc+4+1):
   #else:
   hrange=[data[:,i].min(), data[:,i].max()]
 #hrange = (max(mean - 5.0*std, -15.0), mean + 5.0*std)
-  if(i==6):
+  if(i==1000):
     print("i-6")
     idxsel = np.where((data[:,i] >= -5.0) & (data[:,i] <= 10.0) )
   else:
@@ -59,7 +60,7 @@ for i in range(1,nc+4+1):
   hist_range = (hist_data.min(), hist_data.max())
   print(i, hist_range)
 
-  hist, bin_edges = np.histogram(hist_data, density=False, bins=100, range=hist_range)
+  hist, bin_edges = np.histogram(hist_data, density=False, bins=nbin, range=hist_range)
 
   bin_centres = (bin_edges[:-1] + bin_edges[1:])/2
   eps_data = np.zeros(len(hist)) + 1.0
@@ -77,13 +78,13 @@ for i in range(1,nc+4+1):
   out = minimize(residual, params, args=(bin_centres[idx[0]], hist[idx[0]], eps_data[idx[0]]), method='leastsq')
 
 # Get the fitted curve
-  bin_fit = np.linspace(bin_centres[0], bin_centres[-1], 100)
+  bin_fit = np.linspace(bin_centres[0], bin_centres[-1], nbin)
   hist_fit = gaussian(bin_fit, out.params['amp'].value, out.params['cen'].value,out.params['wid'].value)
 
   fig=plt.figure()
 
   #plt.plot(bin_centres, hist, label='Test data')
-  plt.hist(hist_data, normed=False, bins=100, range=hist_range)
+  plt.hist(hist_data, normed=False, bins=nbin, range=hist_range)
   plt.plot(bin_fit, hist_fit, label='Fitted data')
   
   print(np.min(data[:, i]), np.max(data[:, i]))
@@ -100,7 +101,7 @@ pdf.close()
 
 print(par)
 
-np.savetxt("par.txt", par, fmt="%f\t%f\t%f")
+np.savetxt("../data/par.txt", par, fmt="%f\t%f\t%f")
 
 fig = plt.figure()
 ax = fig.add_subplot(111)

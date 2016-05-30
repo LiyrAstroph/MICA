@@ -11,7 +11,7 @@
 
 void mcmc_conline_run()
 {
-  double aicc;
+  double aicc, chi2;
 
   char fname_mcmc[100];
   strcpy(fname_mcmc, "data/mcmc.txt");
@@ -29,8 +29,10 @@ void mcmc_conline_run()
   reconstruct_conline();
   transfer_function(theta_best);
   aicc = cal_aicc();
+  chi2 = chi_square();
   line_convolution();
   fprintf(fp_results, "aicc: %d %f\n", nc, aicc);
+  fprintf(fp_results, "chi2: %d %f\n", nc, chi2);
 }
 
 void mcmc_conline_init()
@@ -294,7 +296,7 @@ double cal_aicc()
 
   aicc = aic + 2.0*k*(k+1.0)/(n - k - 1.0);
 
-  printf("aicc: %d %f\n", nc, aicc);
+  printf("aicc: %d %f %f\n", nc, aicc, prob);
   return aicc;
 }
 
@@ -405,6 +407,123 @@ double probability_conline_aicc(double *theta)
   prob -= 0.5*(lndet_C + lndet_ICq);
   
   return prob;
+}
+
+double chi_square()
+{
+  double chi2, sigma, taud;
+  double *Larr, *ybuf, *Cq, *ICq, *ave, *ysub, *yrec, *yrec_err, *yave;
+  int i, nq, info;
+  
+  taud = exp(theta_best[1]);
+  sigma = exp(theta_best[0]) * sqrt(taud/2.0);
+  
+  nq = 2*(flag_detrend + 1);
+
+  Larr = workspace;
+  ybuf = Larr + nq*nall_data;
+  Cq = ybuf + nall_data;
+  ICq = Cq + nq*nq;
+  ave = ICq + nq*nq;
+
+  ysub = ave + nq;
+  yrec = ysub + nall_data;
+  yrec_err = yrec + nall_data;
+  yave = yrec_err + nall_data;
+
+
+  set_covar_mat(theta_best);
+
+  for(i=0; i<nall_data*nall_data; i++)
+  {
+    Cmat[i] = Smat[i] + Nmat[i];
+  }
+
+  for(i=0; i<ncon_data; i++)
+  {
+    if(flag_detrend==0)
+    {
+      Larr[i*nq+0] = 1.0;
+      Larr[i*nq+1] = 0.0;
+    }
+    else
+    {
+      Larr[i*nq + 0] = 1.0;
+      Larr[i*nq + 1] = Tcon_data[i];
+      Larr[i*nq + 2] = 0.0;
+      Larr[i*nq + 3] = 0.0;
+    }
+  }
+  for(i=0; i<nline_data; i++)
+  {
+    if(flag_detrend==0)
+    {
+      Larr[(i+ncon_data)*nq+0] = 0.0;
+      Larr[(i+ncon_data)*nq+1] = 1.0;
+    }
+    else
+    {
+      Larr[(i+ncon_data)*nq + 0] = 0.0;
+      Larr[(i+ncon_data)*nq + 1] = 0.0;
+      Larr[(i+ncon_data)*nq + 2] = 1.0;
+      Larr[(i+ncon_data)*nq + 3] = Tline_data[i];
+    }
+  }
+
+  memcpy(ICmat, Cmat, nall_data*nall_data*sizeof(double));
+  inverse_mat(ICmat, nall_data, &info);
+
+  multiply_mat_MN(ICmat, Larr, Tmat1, nall_data, nq, nall_data);
+  multiply_mat_MN_transposeA(Larr, Tmat1, ICq, nq, nq, nall_data);
+
+  memcpy(Cq, ICq, nq*nq*sizeof(double));
+  inverse_mat(Cq, nq, &info);
+  
+  multiply_mat_MN_transposeA(Larr, ICmat, Tmat1, nq, nall_data, nall_data);
+  multiply_mat_MN(Cq, Tmat1, Tmat2, nq, nall_data, nq);
+  multiply_mat_MN(Tmat2, Fall_data, ave, nq, 1, nall_data);
+
+  multiply_mat_MN(Larr, ave, yave, nall_data, 1, nq);
+  for(i=0; i<nall_data; i++)ysub[i] = Fall_data[i] - yave[i];
+  multiply_matvec(ICmat, ysub, nall_data, ybuf);
+
+  multiply_matvec_MN(Smat, nall_data, nall_data, ybuf, yrec);
+  for(i=0; i<nall_data; i++)yrec[i] += yave[i];
+
+  multiply_mat_MN(Smat, ICmat, Tmat1, nall_data, nall_data, nall_data);
+  multiply_mat_MN_transposeB(Tmat1, Smat, Tmat2, nall_data, nall_data, nall_data);
+
+  multiply_mat_MN(Tmat1, Larr, Tmat3, nall_data, nq, nall_data);
+  for(i=0; i<nall_data*nq; i++)Tmat3[i] -= Larr[i];
+  multiply_mat_MN(Tmat3, Cq, Tmat1, nall_data, nq, nq);
+  multiply_mat_MN_transposeB(Tmat1, Tmat3, Tmat4, nall_data, nall_data, nq);
+ 
+
+  for(i=0; i<nall_data; i++)
+  {
+    yrec_err[i] = sigma*sqrt((Smat[i*nall_data+i] - Tmat2[i*nall_data+i] + Tmat4[i*nall_data+i]));
+  }
+
+  FILE *fp;
+  fp = fopen("data/tmp.txt", "w");
+  for(i=0; i<ncon_data; i++)
+  {
+    fprintf(fp, "%f %f %f\n", Tcon_data[i], yrec[i]*scale_con, yrec_err[i]*scale_con);
+  }
+  fprintf(fp, "\n");
+  for(i=ncon_data; i<nall_data; i++)
+  {
+    fprintf(fp, "%f %f %f\n", Tline_data[i-ncon_data], yrec[i]*scale_line, yrec_err[i]*scale_line);
+  }
+  fclose(fp);
+
+  chi2 = 0.0;
+  for(i=0; i<ncon_data; i++)chi2 += pow(Fcon_data[i] - yrec[i], 2)
+                                /( pow(Fcerrs_data[i], 2) );
+  for(i=ncon_data; i<nall_data; i++) chi2 += pow(Fline_data[i-ncon_data] - yrec[i], 2)
+                                /( pow(Flerrs_data[i-ncon_data], 2) );
+  printf("chi2: %f\n", chi2/(nall_data-ntheta));                            
+  return chi2/(nall_data - ntheta);  
 }
 
 void set_covar_mat(double *theta)
@@ -831,6 +950,21 @@ int reconstruct_conline()
   multiply_mat_MN_transposeA(Larr, ICmat, Tmat1, nq, nall_data, nall_data);
   multiply_mat_MN(Cq, Tmat1, Tmat2, nq, nall_data, nq);
   multiply_mat_MN(Tmat2, Fall_data, ave, nq, 1, nall_data);
+
+  if(flag_detrend==0)
+  {
+    printf("ave: %e %e\n", ave[0]*scale_con, ave[1]*scale_line);
+    fprintf(fp_results, "ave: %e %e\n", ave[0]*scale_con, ave[1]*scale_line);
+  }
+  else
+  {
+    printf("ave_line: %e %e\n", ave[2]*scale_line, ave[3]*scale_line);
+    printf("ave_con: %e %e\n", ave[0]*scale_con, ave[1]*scale_con);
+    fprintf(fp_results, "ave_con: %e %e\n", ave[0]*scale_con, ave[1]*scale_con);
+    fprintf(fp_results, "ave_line: %e %e\n", ave[2]*scale_line, ave[3]*scale_line);
+  }
+  
+  
 
   multiply_mat_MN(Larr, ave, yave, nall_data, 1, nq);
   for(i=0; i<nall_data; i++)ysub[i] = Fall_data[i] - yave[i];

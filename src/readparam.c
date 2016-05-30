@@ -50,6 +50,9 @@ void read_param()
 
 //*******************************************
 // read flag for detrending.
+  
+  flag_detrend = 0;
+
   buf1[0]='%';
   while(buf1[0]=='%')
   {

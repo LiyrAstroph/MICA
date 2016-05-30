@@ -9,12 +9,13 @@
 
 void transfer_function(double *theta)
 {
-  FILE *ftran;
+  FILE *ftran, *ftran_comp;
   const int nt=ntau;
   int i, j;
   double tau, phi, phi1, phi2, phii, phierr, err1, err2, err3, dlnphii, w, fk;
 
   ftran = fopen("data/transfer.txt", "w");
+  ftran_comp = fopen("data/transfer_comp.txt", "w");
   
   w = theta[2];
   for(i=0; i<nt; i++)
@@ -75,6 +76,7 @@ void transfer_function(double *theta)
     phierr = 0.0;
     phi1 = phi2 = 0.0;
     fprintf(ftran, "%f ", tau);
+    fprintf(ftran_comp, "%f ", tau);
     for(j=0; j<nc; j++)
     {
       fk = exp(theta[3+j]);
@@ -101,11 +103,35 @@ void transfer_function(double *theta)
       phierr += pow(phii * dlnphii, 2.0);
 
       //printf("%e %e %e %e %e\n", phi2, exp(log(phii) + dlnphii), err1, err2, err3);
+      fprintf(ftran_comp, "%e ", phii);
     }
     fprintf(ftran, "%e %e %e\n", phi, phi1, phi2);
-
+    fprintf(ftran_comp, "\n");
     TF[i] = phi;
   }
+
+  double tau_mean, tau_mean_err, tauk, fac1, fac2;
+
+  fac1 = 0.0;
+  fac2 = 0.0;
+
+  err1=err2=0.0;
+  for(j=0; j<nc; j++)
+  {
+    tauk = grid_tau[j];
+    fk = exp(theta[3+j]);
+    fac1 += tauk * fk;
+    fac2 += fk;
+
+    err1 += tauk * pow(fk * theta_best_var[3+j], 2.0);
+    err2 += pow(fk * theta_best_var[3+j], 2.0);
+  }
+
+  tau_mean = fac1 / fac2;
+  tau_mean_err = tau_mean * sqrt( err1/fac1/fac1 + err2/fac2/fac2);
+  printf("tau_mean: %f %f\n", tau_mean, tau_mean_err);
+  fprintf(fp_results, "tau_mean: %f %f\n", tau_mean, tau_mean_err);
 #endif
   fclose(ftran);
+  fclose(ftran_comp);
 }

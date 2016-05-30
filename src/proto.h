@@ -33,6 +33,7 @@ void set_covar_Amat(double *theta);
 double probability_conline(double *theta);
 double probability_conline_aicc(double *theta);
 double cal_aicc();
+double chi_square();
 int reconstruct_conline();
 
 // mcmc.c

@@ -14,6 +14,9 @@ void init()
   int i;
   double dT, T1, T2;
 
+  strcpy(fname_results, "data/results.txt");
+  fp_results = fopen(fname_results, "w");
+
   memory_alloc_data();
   read_data();
 
@@ -66,11 +69,6 @@ void init()
   dT = (T2-T1)/(nline-1.0);
   for(i=0; i<nline; i++)
     Tline[i] = T1 + dT *i;
-
-  strcpy(fname_results, "data/results.txt");
-  fp_results = fopen(fname_results, "w");
-
-  flag_detrend = 0;
 }
 
 void scale_light_curves()
@@ -110,6 +108,7 @@ void scale_light_curves()
   }
   
   printf("scale: %e %e\n", scale_con, scale_line);
+  fprintf(fp_results, "scale: %e %e\n", scale_con, scale_line);
 }
 
 /*
