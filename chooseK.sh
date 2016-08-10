@@ -1,4 +1,4 @@
-for((i=11; i<=15;i++))
+for((i=2; i<=15;i++))
 do
 #sed -i "s/nc=.*/nc=$i;/" mcmc.c
 #make

@@ -12,7 +12,7 @@ void run()
 //  test();//
   if(flag_sim)
   {
-    simulate_con(0.6, 100.0, 1.0, 10.0);
+    simulate_con(1.5, 80.0, 1.0, 10.0);
     simulate_line();
   }
   else

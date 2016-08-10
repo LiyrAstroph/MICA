@@ -123,12 +123,12 @@ void transfer_function(double *theta)
     fac1 += tauk * fk;
     fac2 += fk;
 
-    err1 += tauk * pow(fk * theta_best_var[3+j], 2.0);
-    err2 += pow(fk * theta_best_var[3+j], 2.0);
+    err1 += tauk*tauk * pow(fk*0.5*(theta_best_var[(3+j)*2] + theta_best_var[(3+j)*2 + 1]), 2.0);
+    err2 += pow(fk*0.5*(theta_best_var[(3+j)*2] + theta_best_var[(3+j)*2 + 1]), 2.0);
   }
 
   tau_mean = fac1 / fac2;
-  tau_mean_err = tau_mean * sqrt( err1/fac1/fac1 + err2/fac2/fac2);
+  tau_mean_err = tau_mean * sqrt(err1/fac1/fac1 + err2/fac2/fac2);
   printf("tau_mean: %f %f\n", tau_mean, tau_mean_err);
   fprintf(fp_results, "tau_mean: %f %f\n", tau_mean, tau_mean_err);
 #endif

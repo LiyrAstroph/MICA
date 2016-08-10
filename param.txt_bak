@@ -14,6 +14,6 @@ data/line_test.txt                 % light curve 2
 taulim               0.0   100.0    % range of time lag
 nc                   4             % number of Gaussians or top-hats
 
-nmcmc   150000                      % mcmc length
+nmcmc   100000                      % mcmc length
 nbuilt  20000                      % built-in length
 %%

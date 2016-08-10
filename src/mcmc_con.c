@@ -17,7 +17,7 @@ void mcmc_con_run()
   mcmc_con_init();
   if(flag_mcmc==1)
   {
-    mcmc_sampling(fname_mcmc, &probability_con);
+    //mcmc_sampling(fname_mcmc, &probability_con);
     mcmc_stats(fname_mcmc);
   }
   else

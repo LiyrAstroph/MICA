@@ -297,7 +297,7 @@ void Chol_decomp_U(double *a, int n, int *info)
     error_exit(9);
   }
   for(i=0;i<n;i++)
-    for(j=0;j<i;j++)
+    for(j=i+1;j<n;j++)
       a[i*n+j] = 0.0;
   return;
 }

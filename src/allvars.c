@@ -16,7 +16,7 @@ const int ntau=200;
 double *TF_tau, *TF;
 
 // mcmc
-const int ntheta_max = 50;
+const int ntheta_max = 200;
 int ntheta;
 int nmcmc, nbuilt;
 double *workspace;

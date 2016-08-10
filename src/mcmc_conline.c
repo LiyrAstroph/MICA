@@ -19,7 +19,7 @@ void mcmc_conline_run()
   mcmc_conline_init();
   if(flag_mcmc==1)
   {
-    mcmc_sampling(fname_mcmc, &probability_conline);
+    //mcmc_sampling(fname_mcmc, &probability_conline);
     mcmc_stats(fname_mcmc);
   }
   else

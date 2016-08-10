@@ -11,7 +11,7 @@
 #include "allvars.h"
 #include "proto.h" 
 
-#define SNR (40.0)
+#define SNR (120.0)
 int n_con_sim=301, n_line_sim=301;
 double sim_error=10.0*1.0/SNR, sim_rel_error=1.0/SNR;
 
@@ -124,8 +124,8 @@ void simulate_con_init()
 
   gsl_T_sim = gsl_rng_default;
   gsl_r_sim = gsl_rng_alloc (gsl_T_sim);
-  gsl_rng_set(gsl_r_sim, 12); 
-  //gsl_rng_set(gsl_r_sim, time(NULL)); 
+  //gsl_rng_set(gsl_r_sim, 12); 
+  gsl_rng_set(gsl_r_sim, time(NULL)); 
 
   return;
 }
