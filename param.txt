@@ -4,16 +4,16 @@
 %% 2) lines starting with "%" are regarded as comments and neglected. 
 %%
 
-flag_sim             1             % 1 for simulations only; 0 for mcmcm implementationo
-flag_detrend         1             % 1 for detrending; 
+flag_sim             0             % 1 for simulations only; 0 for mcmcm implementationo
+flag_detrend         0             % 1 for detrending; 
 flag_mcmc            1             % 0 for reading parameters from data/par.txt
 
-data/con_test.txt                  % light curve 1
-data/line_test.txt                 % light curve 2
+data/ngc6814_con_bentz2009.txt                  % light curve 1
+data/ngc6814_hb_bentz2009.txt                % light curve 2
 
-taulim               0.0   50.0    % range of time lag
-nc      4
+taulim               0.0   15.0    % range of time lag
+nc      10
 
 nmcmc   100000                      % mcmc length
-nbuilt  20000                      % built-in length
+nbuilt  60000                      % built-in length
 %%

@@ -1,10 +1,10 @@
 #/*
-# * PATCHRM
-# * a non-Parameteric ApproaCH to constrain tthe transfer function in Reverberation Mapping
+# * MICA (Multiple and Inhomogeneous Component Analysis)
+# * A Non-parameteric ApproaCH to Constrain the Transfer Function in Reverberation Mapping
 # * 
 # * Yan-Rong Li, liyanrong@mail.ihep.ac.cn
 # *
-# * Reference: Li, Y.-R. et al. 2016, ApJ
+# * Reference: Li, Y.-R. et al. 2016, arXiv:1608.03741
 # *
 # */
 
