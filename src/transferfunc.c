@@ -36,14 +36,17 @@ void transfer_function(double *theta)
       {
         phii = exp(theta[3+j])/(2.0*w);
         phi += phii;
-        err1 = theta_best_var[3+j];
+        err1 = theta_best_var[(3+j)*2];
         dlnphii = err1;
         phi1 += exp(log(phii) - dlnphii);
+
+        err1 = theta_best_var[(3+j)*2+1];
+        dlnphii = err1;
         phi2 += exp(log(phii) + dlnphii);
         phierr += pow(phii * dlnphii, 2.0);
       }
     }
-    fprintf(ftran, "%e %e %e %e\n", phi, phi1, phi2);
+    fprintf(ftran, "%e %e %e\n", phi, phi1, phi2);
     TF[i] = phi;
   }
 #elif defined JAVELIN
@@ -59,9 +62,11 @@ void transfer_function(double *theta)
     {
       phii = fk/(2.0*w);
       phi += phii;
-      err1 = theta_best_var[3+j];
+      err1 = theta_best_var[(3+j)*2];
       dlnphii = err1;
       phi1 += exp(log(phii) - dlnphii);
+      err1 = theta_best_var[(3+j)*2+1];
+      dlnphii = err1;
       phi2 += exp(log(phii) + dlnphii);
       phierr += pow(phii * dlnphii, 2.0);
     }

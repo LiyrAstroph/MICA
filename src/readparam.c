@@ -210,6 +210,7 @@ void read_param()
   }
   nc_lim_low=atoi(buf2);
   nc_lim_up=atoi(buf3);
+#ifndef JAVELIN
   if(nc_lim_low <2 || nc_lim_up < nc_lim_low || nc_lim_up > ntheta_max -4)
   {
     strcpy(buf1, "nc");
@@ -222,7 +223,7 @@ void read_param()
     strcpy(str_error_exit, buf1);
     error_exit(11);
   }
-
+#endif
   printf("nc range: %d %d\n", nc_lim_low, nc_lim_up);
 
 //*******************************************
@@ -381,6 +382,16 @@ void read_input()
     }
     i++;
   }
+
+#ifdef JAVELIN  
+  if(i != 2 + 3 + 1)
+  {
+    sprintf(buf, "  number of rows %d not equal to 6", i);
+    strcpy(str_error_exit, "error in the data/par.txt.\n");
+    strcat(str_error_exit, buf);
+    error_exit(12);
+  }
+#else
   if(i != nc + 3 + 1)
   {
     sprintf(buf, "  number of rows %d not equal to nc+4=%d", i, nc+4);
@@ -388,6 +399,7 @@ void read_input()
     strcat(str_error_exit, buf);
     error_exit(12);
   }
+#endif
 
   fclose(fp);
 }

@@ -15,7 +15,7 @@ data/con_test.txt                  % light curve 1
 data/line_test.txt                 % light curve 2
 
 taulim               0.0   50.0    % range of time lag
-nc                   3     5       % range of number of Gaussians (smoothing parameter), must >=2
+nc                   3     6       % range of number of Gaussians (smoothing parameter), must >=2
                                    % if above "flag_mcmc = 0", nc must be a single value, i.e., 
                                    % the lower and upper limit of nc must be same.
 

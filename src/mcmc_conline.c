@@ -16,8 +16,7 @@ void mcmc_conline_run()
   double *theta_best_this, *theta_best_var_this;
 
   char fname_mcmc[100];
-  strcpy(fname_mcmc, "data/mcmc.txt");
-  
+    
   aicc_best = DBL_MAX;
   theta_best_this = malloc(ntheta_max*sizeof(double));
   theta_best_var_this = malloc(ntheta_max*2*sizeof(double));
@@ -29,6 +28,7 @@ void mcmc_conline_run()
     for(nc = nc_lim_low; nc<=nc_lim_up; nc++)
     {
       printf("nc = %d\n", nc);
+      sprintf(fname_mcmc, "data/mcmc_%02d.txt", nc);
       mcmc_conline_init();
       mcmc_sampling(fname_mcmc, &probability_conline);
       mcmc_stats(fname_mcmc);
@@ -48,19 +48,22 @@ void mcmc_conline_run()
   {
     printf("reading par.txt\n");
     nc = nc_best = nc_lim_low;
+    sprintf(fname_mcmc, "data/mcmc_%02d.txt", nc);
     mcmc_conline_init();
     read_input();
     memcpy(theta_best_this, theta_best, ntheta * sizeof(double));
     memcpy(theta_best_var_this, theta_best_var, ntheta * 2 * sizeof(double));
   }
   printf("*******finish mcmc\n");
+
   fprintf(fp_results, "************Best Estimate************\n");
   fprintf(fp_results, "best nc: %d\n", nc_best);
   printf("best nc: %d\n", nc_best);
   
   nc = nc_best;
   memcpy(theta_best, theta_best_this, ntheta * sizeof(double));
-  memcpy(theta_best_var, theta_best_var_this, ntheta * 2 * sizeof(double));
+  memcpy(theta_best_var, theta_best_var_this, ntheta * 2 * sizeof(double));  
+  mcmc_conline_init(); // reset the grid of tau
 
   reconstruct_conline();
   transfer_function(theta_best);
@@ -80,25 +83,24 @@ void mcmc_conline_init()
 
   
 #ifdef JAVELIN  // only one-tophat is used in JAVELIN
-  nc = 1;
   ntheta = 2 + 3 + 1;
 
-  theta_range[0][0] = log(1.0e-6);
-  theta_range[0][1] = log(10.0);
+  theta_range[0][0] = log(1.0e-6);  // sigma in DRW
+  theta_range[0][1] = log(10.0);    // 
 
-  theta_range[1][0] = log(1.0e-2);
+  theta_range[1][0] = log(1.0e-2);  // tau in DRW
   theta_range[1][1] = log(1.0e5);
 
-  theta_range[2][0] = (tau_lim_up - tau_lim_low)/1000.0;
+  theta_range[2][0] = (tau_lim_up - tau_lim_low)/1000.0;  // width of tophat
   theta_range[2][1] = (tau_lim_up - tau_lim_low)*10.0;
   
-  theta_range[3][0] = 0.0;
+  theta_range[3][0] = 0.0;       // height of tophat
   theta_range[3][1] = 1.0e3;
 
-  theta_range[4][0] = tau_lim_low;
+  theta_range[4][0] = tau_lim_low;  //central value of tophat
   theta_range[4][1] = tau_lim_up;
 
-  theta_range[5][0] = log(1.0e-5);
+  theta_range[5][0] = log(1.0e-5);  // systematic error
   theta_range[5][1] = log(1.0e6);
 
   i = 0;

@@ -17,6 +17,18 @@ void init()
   strcpy(fname_results, "data/results.txt");
   fp_results = fopen(fname_results, "w");
 
+#ifdef JAVELIN
+  fprintf(fp_results, "JAVELIN-single top-hat transfer function.\n");
+  printf("JAVELIN.\n");
+  nc_lim_low = nc_lim_up = 1;
+#elif defined TOPHAT
+  fprintf(fp_results, "multiple top-hat transfer function.\n");
+  printf("TOPHATs.\n");
+#else
+  fprintf(fp_results, "multiple Gaussian transfer function.\n");
+  printf("GAUSSIANs.\n");
+#endif
+
   memory_alloc_data();
   read_data();
 
@@ -49,7 +61,7 @@ void init()
 
   printf("len: %f %f\n", len_con, len_line);
   printf("cad: %f %f\n", cad_con, cad_line);
-  
+
   T1 = Tcon_data[0];
   T2 = Tcon_data[ncon_data-1];
 
