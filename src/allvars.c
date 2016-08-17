@@ -10,7 +10,7 @@ FILE *fp_results;
 
 // transfer function parameters
 double tau_lim_low, tau_lim_up;
-int nc;
+int nc, nc_lim_low, nc_lim_up, nc_best;
 double *grid_tau;
 const int ntau=200;
 double *TF_tau, *TF;
@@ -47,7 +47,7 @@ int ncon=500, nline=500, nall;
 double *Tcon, *Fcon, *Fcerrs, *Tline, *Fline, *Flerrs;
 
 // error exit
-char str_error_exit[100];
+char str_error_exit[200];
 
 // mathematic functions
 int *workspace_ipiv;

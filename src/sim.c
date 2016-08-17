@@ -26,11 +26,10 @@ void simulate_con(double sigma, double tau, double alpha, double ave_con)
 {
   FILE *fscon_out;
 
-  double *Py, *Pybuf, *Prandvec;
-  int i,j, info;
+  double *Py, *Prandvec;
+  int i, info;
 
   Py = array_malloc(n_con_sim);
-  Pybuf = array_malloc(n_con_sim);
   Prandvec = array_malloc(n_con_sim);
 
   simulate_con_init();

@@ -49,7 +49,7 @@ void init()
 
   printf("len: %f %f\n", len_con, len_line);
   printf("cad: %f %f\n", cad_con, cad_line);
-
+  
   T1 = Tcon_data[0];
   T2 = Tcon_data[ncon_data-1];
 

@@ -46,7 +46,7 @@ void transfer_function(double *theta)
     fprintf(ftran, "%e %e %e %e\n", phi, phi1, phi2);
     TF[i] = phi;
   }
-#elif defined JAVELINE
+#elif defined JAVELIN
   for(i=0; i<nt; i++)
   {
     tau = TF_tau[i];

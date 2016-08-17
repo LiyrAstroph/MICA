@@ -14,7 +14,7 @@ void line_convolution()
   int info, i, j, nq;
   double flux, err, tline, taup, tcon, fcon, fcon_err, dtau; 
   double *yrec_line;
-  double sigma, taud;
+//  double sigma, taud;
   double *Larr, *ybuf, *Cq, *ICq, *ave, *yave;
 
   gsl_interp_accel *gsl_acc_conv, *gsl_acc_error_conv;
@@ -32,8 +32,8 @@ void line_convolution()
   yrec_line = array_malloc(nline_data);
   
 // ave
-  taud = exp(theta_best[1]);
-  sigma = exp(theta_best[0]) * sqrt(taud/2.0);
+//  taud = exp(theta_best[1]);
+//  sigma = exp(theta_best[0]) * sqrt(taud/2.0);
   
   nq = 2*(flag_detrend + 1);
   Larr = workspace;
@@ -94,7 +94,7 @@ void line_convolution()
   multiply_mat_MN(Cq, Tmat1, Tmat2, nq, nall_data, nq);
   multiply_mat_MN(Tmat2, Fall_data, ave, nq, 1, nall_data);
   multiply_mat_MN(Larr, ave, yave, nall_data, 1, nq);
-  printf("%f %f\n", ave[0], ave[1]);
+  //printf("%f %f\n", ave[0], ave[1]);
 
 
   dtau = TF_tau[1] - TF_tau[0];

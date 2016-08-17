@@ -18,7 +18,7 @@ extern FILE *fp_results;
 
 // transfer function parameters
 extern double tau_lim_low, tau_lim_up;
-extern int nc;
+extern int nc, nc_lim_low, nc_lim_up, nc_best;
 extern double *grid_tau;
 extern const int ntau;
 extern double *TF_tau, *TF;
@@ -53,7 +53,7 @@ extern int ncon, nline, nall;
 extern double *Tcon, *Fcon, *Fcerrs, *Tline, *Fline, *Flerrs;
 
 // error exit
-extern char str_error_exit[100];
+extern char str_error_exit[200];
 
 // mathematic functions
 extern int *workspace_ipiv;

@@ -12,7 +12,7 @@ SHELL=/bin/bash
 
 CC       = gcc -O2 -Wall
 OPTIMIZE = 
-#OPTIMIZE += -DJAVELINE
+#OPTIMIZE += -DJAVELIN
 #OPTIMIZE += -DTOPHAT
 
 #---------target system
@@ -27,8 +27,6 @@ GSL_INCL    = $(shell pkg-config --cflags gsl)
 GSL_LIBS    = $(shell pkg-config --libs gsl) 
 LAPACK_INCL = -I /usr/local/share/lapack/include -I/opt/local/include
 LAPACK_LIBS = -L /usr/local/share/lapack/lib -llapacke
-MPFIT_LIBS = -lmpfit
-MPFIT_INCS = -I /usr/local/include
 OPTIMIZE    = -O2 
 #-Wall
 endif
@@ -41,8 +39,6 @@ GSL_LIBS    = $(shell pkg-config --libs gsl)
 #LAPACK_LIBS = /usr/local/share/lapack/lib/liblapacke.a -llapack -L/usr/lib64/atlas -lcblas 
 LAPACK_INCL = -I/usr/include/lapacke
 LAPACK_LIBS = -L/usr/lib64 -llapacke -llapack -lblas
-MPFIT_LIBS = -lmpfit
-MPFIT_INCS = -I /usr/local/include
 endif
 
 ifeq ($(SYSTEM), "Cluster")
@@ -50,8 +46,6 @@ GSL_INCL = -I/mbh/mbhd01/soft/gsl/include
 GSL_LIBS = -L/mbh/mbhd01/soft/gsl/lib  -lgsl -lgslcblas -lm
 LAPACK_INCL = -I/mbh/mbhd01/user/liyanrong/soft/lapack/include
 LAPACK_LIBS = -L/mbh/mbhd01/user/liyanrong/soft/lapack/lib -llapacke -llapack -lblas -lgfortran
-MPFIT_LIBS = -L/mbh/mbhd01/user/liyanrong/soft/mpfit -lmpfit
-MPFIT_INCS = -I /mbh/mbhd01/user/liyanrong/soft/mpfit
 endif
 
 OPTIONS  = $(OPTIMIZE)

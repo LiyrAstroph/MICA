@@ -17,7 +17,7 @@
 
 int main(int argc, char** argv)
 {
-  printf("=========Start of RMPATCH==============\n");
+  printf("==============Start of RMPATCH==============\n");
   if(argc<2)
   {
     error_exit(1);
@@ -27,6 +27,6 @@ int main(int argc, char** argv)
   
   run();
 
-  printf("========= End of RMPATCH ==============\n");
+  printf("============== End of RMPATCH ==============\n");
   return 0;
 }

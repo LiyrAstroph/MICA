@@ -41,6 +41,8 @@ int mcmc_sampling(char *fname_mcmc, double (* prob_fun)(double *theta))
   prob = prob_fun(theta);
   istep = 0;
   iaccpt = 0;
+
+  printf("step:%6d", 0);
   while(istep < nmcmc)
   {
     flag = 1;
@@ -92,7 +94,7 @@ int mcmc_sampling(char *fname_mcmc, double (* prob_fun)(double *theta))
 
     for(i=0; i<ntheta; i++)
       theta_mcmc[i*n_cov_update + istep%n_cov_update] = theta[i];
-    if(istep%100==0)printf("%d\n", istep);
+    if(istep%10==0)printf("\b\b\b\b\b\b%6d", istep);
 
     fprintf(fmcmc, "%d", istep);
     for(i=0;i<ntheta;i++)
@@ -107,12 +109,13 @@ int mcmc_sampling(char *fname_mcmc, double (* prob_fun)(double *theta))
     {
       get_cov_matrix_diag(theta_mcmc, n_cov_update, ntheta);
       memcpy(var_cov_mat, cov_matrix, ntheta*ntheta*sizeof(double));
-      display_mat(var_cov_mat, ntheta, ntheta);
+      //display_mat(var_cov_mat, ntheta, ntheta);
       memcpy(Pmatrix, var_cov_mat, ntheta*ntheta*sizeof(double));
       Chol_decomp_U(Pmatrix, ntheta, &info);
     }
   }
-
+  
+  printf("\n");
   printf("Accept rate: %f\n", 1.0*iaccpt/istep);
 
   fclose(fmcmc);

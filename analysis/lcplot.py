@@ -4,8 +4,8 @@ from matplotlib.ticker import MultipleLocator, FormatStrFormatter
 
 plt.rc('text', usetex=True)
 
-con = np.loadtxt("../data/ngc6814_con_bentz2009.txt");
-hb = np.loadtxt("../data/ngc6814_hb_bentz2009.txt")
+con = np.loadtxt("../data/con_test.txt");
+hb = np.loadtxt("../data/line_test.txt")
 
 con_rec = np.loadtxt("../data/sall_con.txt")
 hb_rec = np.loadtxt("../data/sall_line.txt")

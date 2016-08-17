@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
+#include <float.h>
 #include <string.h>
 #include <gsl/gsl_cblas.h>
 #include <gsl/gsl_randist.h>
@@ -11,28 +12,66 @@
 
 void mcmc_conline_run()
 {
-  double aicc, chi2;
+  double aicc, chi2, aicc_best;
+  double *theta_best_this, *theta_best_var_this;
 
   char fname_mcmc[100];
   strcpy(fname_mcmc, "data/mcmc.txt");
-
-  mcmc_conline_init();
+  
+  aicc_best = DBL_MAX;
+  theta_best_this = malloc(ntheta_max*sizeof(double));
+  theta_best_var_this = malloc(ntheta_max*2*sizeof(double));
+  
+  printf("*******con-line mcmc\n");
   if(flag_mcmc==1)
   {
-    //mcmc_sampling(fname_mcmc, &probability_conline);
-    mcmc_stats(fname_mcmc);
+    fprintf(fp_results, "************AICC************\n");
+    for(nc = nc_lim_low; nc<=nc_lim_up; nc++)
+    {
+      printf("nc = %d\n", nc);
+      mcmc_conline_init();
+      mcmc_sampling(fname_mcmc, &probability_conline);
+      mcmc_stats(fname_mcmc);
+      aicc = cal_aicc();
+      if(aicc < aicc_best)
+      {
+        aicc_best = aicc;
+        nc_best = nc;
+        memcpy(theta_best_this, theta_best, ntheta * sizeof(double));
+        memcpy(theta_best_var_this, theta_best_var, ntheta * 2 * sizeof(double));
+      }
+      printf("aicc: %d %f\n", nc, aicc);
+      fprintf(fp_results, "aicc: %d %f\n", nc, aicc);
+    }
   }
   else
   {
+    printf("reading par.txt\n");
+    nc = nc_best = nc_lim_low;
+    mcmc_conline_init();
     read_input();
+    memcpy(theta_best_this, theta_best, ntheta * sizeof(double));
+    memcpy(theta_best_var_this, theta_best_var, ntheta * 2 * sizeof(double));
   }
+  printf("*******finish mcmc\n");
+  fprintf(fp_results, "************Best Estimate************\n");
+  fprintf(fp_results, "best nc: %d\n", nc_best);
+  printf("best nc: %d\n", nc_best);
+  
+  nc = nc_best;
+  memcpy(theta_best, theta_best_this, ntheta * sizeof(double));
+  memcpy(theta_best_var, theta_best_var_this, ntheta * 2 * sizeof(double));
+
   reconstruct_conline();
   transfer_function(theta_best);
   aicc = cal_aicc();
   chi2 = chi_square();
   line_convolution();
-  fprintf(fp_results, "aicc: %d %f\n", nc, aicc);
-  fprintf(fp_results, "chi2: %d %f\n", nc, chi2);
+  fprintf(fp_results, "aicc: %f\n", aicc);
+  fprintf(fp_results, "chi2: %f\n", chi2);
+
+  free(theta_best_this);
+  free(theta_best_var_this);
 }
 
 void mcmc_conline_init()
@@ -40,7 +79,7 @@ void mcmc_conline_init()
   int i, j;
 
   
-#ifdef JAVELINE  // only one-tophat is used in JAVELINE
+#ifdef JAVELIN  // only one-tophat is used in JAVELIN
   nc = 1;
   ntheta = 2 + 3 + 1;
 
@@ -296,7 +335,7 @@ double cal_aicc()
 
   aicc = aic + 2.0*k*(k+1.0)/(n - k - 1.0);
 
-  printf("aicc: %d %f %f\n", nc, aicc, prob);
+  //printf("aicc: %d %f %f\n", nc, aicc, prob);
   return aicc;
 }
 
@@ -710,7 +749,7 @@ double Slc(double tcon, double tline, double *theta)
     Stot += fk * Sk;
   }
   Stot *= (taud/2.0/w);
-#elif defined JAVELINE 
+#elif defined JAVELIN 
   tauk = theta[4]; //theta[3+nc+i];
   fk = theta[3];
   DT = Dt - tauk;
@@ -787,7 +826,7 @@ double Sll(double ti, double tj, double *theta)
   } 
   Stot *= (taud*taud/4.0/w/w);
 
-#elif defined JAVELINE
+#elif defined JAVELIN
   for(k=0; k<1; k++)
   {
     tauk = theta[3+k+1]; //theta[3+nc+k];

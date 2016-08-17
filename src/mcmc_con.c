@@ -14,14 +14,17 @@ void mcmc_con_run()
   char fname_mcmc[100];
   strcpy(fname_mcmc, "data/mcmc_con.txt");
 
+  printf("*******con mcmc\n");
   mcmc_con_init();
   if(flag_mcmc==1)
   {
-    //mcmc_sampling(fname_mcmc, &probability_con);
+    mcmc_sampling(fname_mcmc, &probability_con);
     mcmc_stats(fname_mcmc);
   }
   else
   {
+    nc = nc_lim_low;
+    printf("reading par.txt\n");
     read_input();
   }
   
