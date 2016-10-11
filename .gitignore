@@ -1,9 +1,10 @@
 doc/*
 !doc/*.tex
+!doc/readme.pdf
 src/*
 !src/*.[ch]
 !Makefile
-rmpatch
+mica
 data/*
 !data/con_test.txt
 !data/line_text.txt

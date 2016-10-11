@@ -1,0 +1,73 @@
+\documentclass[preprint]{aastex}
+
+\usepackage{apjfonts}
+
+\def\mica{{\texttt{MICA}}}
+
+\begin{document}
+
+\title{\texttt{MICA}: A Non-parametric Approach to Constrain the Transfer Function\\ in Reverberation Mapping}
+\author{Yan-Rong Li}
+\maketitle
+
+\section{Third-party Software Dependencies}
+
+\begin{itemize}
+ \item LAPACKE: c version of LAPACK
+ \item GSL:  GNU Scientific Library
+\end{itemize}
+
+\section{Compiling}
+Modify the ``\texttt{Makefile}'' according to your system's configurations, and then type ``\texttt{make}''
+to compile it. This will create an executable file called ``\texttt{mica}''.
+
+\mica~supports three types of transfer functions:
+\begin{itemize}
+ \item a family of Gaussians (default option);
+ \item a family of top-hats;
+ \item a single top-hat (same as in \texttt{JAVELIN}).
+\end{itemize}
+Switch on the option ``\texttt{OPTIMIZE += -DJAVELIN}'' and ``\texttt{OPTIMIZE += -DTOPHAT}'' 
+in the ``\texttt{Makefile}'' to use the latter two types of transfer functions, respectively.
+
+
+\section{Running \texttt{MICA}}
+In a Linux terminal, type\\
+=============================\\
+\texttt{./mica ./param.txt}\\
+=============================\\
+to run \texttt{MICA}. Here, the argument ``param.txt'' specifies some configurations for \texttt{MICA}.
+Modify the values in ``param.txt'' for your purposes. Generally, larger ``nmcmc'' gives better Markov chains
+and therefore more reliable parameter estimation, but at the cost of more computation time.
+
+\mica~searches over the range of ``nc'' in ``param.txt'' and finds out the best smoothing parameter
+``nc'' ($K$ in the paper). ``taulim'' specifies the range of the time lag under consideration. You 
+need to input an appropriate range according to your light curves.
+
+\section{Outcomes}
+The sub-directory ``\texttt{data/}'' contains the outcomes of \mica.
+\begin{itemize}
+ \item \texttt{transfer.txt}: the best recovered transfer function.
+ \item \texttt{results.txt}: some important results.
+ \item \texttt{mcmc*.txt}: the generated Markov chains. \texttt{mcmc\_con.txt} is for recovering the continuum 
+ only. \texttt{mcmc\_xx.txt} is for recovering the transfer function, where ``xx''
+ represents the number of Gaussians/top-hats.
+ \item \texttt{scon.txt}: reconstruction of the continuum generated when only recovering the continuum.
+ \item \texttt{sall\_con/line.txt}: reconstruction of both the continuum and line light curves
+ generated when recovering the transfer function. Note that \texttt{scon.txt} and \texttt{sall\_con.txt}
+ are slightly different, because the latter is further constraint by line light curve.
+\end{itemize}
+
+\section{Postprocessing}
+\mica~assigns the best estimates of the parameters the mean value of the corresponding Markov chain. 
+You can do the statistic estimation by yourself on the Markov chain and store the best values and their 
+lower errorbar and upper errorbar in the file ``\texttt{data/par.txt}'' (one line per parameter).
+Then set ``flag\_mcmc'' in ``param.txt'' to be ``0'', \mica~will read the file ``\texttt{data/par.txt}''
+and calculate the transfer function. In sub-directory \texttt{analysis/}, the python script ``analysis.py''
+shows an example to do this.
+
+In sub-directory \texttt{analysis/}, the python script ``lcplot.py'' plots the light curves and the best 
+recovered transfer function into a pdf file ``fig.pdf''.
+
+\end{document}
+

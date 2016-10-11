@@ -1,6 +1,6 @@
 #/*
 # * MICA (Multiple and Inhomogeneous Component Analysis)
-# * A Non-parameteric ApproaCH to Constrain the Transfer Function in Reverberation Mapping
+# * A Non-parametric Approach to Constrain the Transfer Function in Reverberation Mapping
 # * 
 # * Yan-Rong Li, liyanrong@mail.ihep.ac.cn
 # *
@@ -52,7 +52,7 @@ OPTIONS  = $(OPTIMIZE)
 CFLAGS   = $(OPTIONS) $(GSL_INCL) $(LAPACK_INCL) $(MPFIT_INCS)
 LIBS     = $(GSL_LIBS) $(LAPACK_LIBS) -lm $(MPFIT_LIBS)
 
-EXEC     = rmpatch
+EXEC     = mica
 SRC      = src/
 INCL     = Makefile $(SRC)/allvars.h $(SRC)/proto.h
 

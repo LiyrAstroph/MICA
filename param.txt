@@ -5,7 +5,7 @@
 %%
 
 flag_sim             0             % 1 for simulations only; 0 for mcmc implementation
-flag_detrend         1             % 1 for detrending; 
+flag_detrend         0             % 1 for detrending; 
 flag_mcmc            1             % 0 for reading parameters from data/par.txt, which stores the values 
                                    % for the free parameters. 
                                    % if 0, below nc must be a single value, i.e., the lower and upper limit 
@@ -14,11 +14,11 @@ flag_mcmc            1             % 0 for reading parameters from data/par.txt,
 data/con_test.txt                  % light curve 1
 data/line_test.txt                 % light curve 2
 
-taulim               0.0   50.0    % range of time lag
-nc                   3     6       % range of number of Gaussians (smoothing parameter), must >=2
+taulim               0.0   10.0    % range of time lag
+nc                   3     10       % range of number of Gaussians (smoothing parameter), must >=2
                                    % if above "flag_mcmc = 0", nc must be a single value, i.e., 
                                    % the lower and upper limit of nc must be same.
 
-nmcmc              50000           % mcmc length
+nmcmc              60000           % mcmc length
 nbuilt             30000           % built-in length
 %%

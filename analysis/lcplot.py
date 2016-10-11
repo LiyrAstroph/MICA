@@ -1,3 +1,16 @@
+#
+# MICA (Multiple and Inhomogeneous Component Analysis)
+# A Non-parametric Approach to Constrain the Transfer Function in Reverberation Mapping
+#
+# Yan-Rong Li, liyanrong@mail.ihep.ac.cn
+#
+# Reference: Li, Y.-R. et al. 2016, arXiv:1608.03741
+#
+#
+# lcplot.py
+# plot the best recovered light curves and transfer function.
+
+
 import matplotlib.pyplot as plt 
 import numpy as np 
 from matplotlib.ticker import MultipleLocator, FormatStrFormatter

@@ -1,3 +1,15 @@
+#
+# MICA (Multiple and Inhomogeneous Component Analysis)
+# A Non-parametric Approach to Constrain the Transfer Function in Reverberation Mapping
+#
+# Yan-Rong Li, liyanrong@mail.ihep.ac.cn
+#
+# Reference: Li, Y.-R. et al. 2016, arXiv:1608.03741
+#
+#
+# analysis.py
+# 
+
 import numpy as np
 from scipy.optimize import curve_fit
 from lmfit import minimize, Parameters, fit_report
@@ -12,17 +24,15 @@ ntau = 100
 tau1 = 0.0
 tau2 = 50.0
 nc = 4
-nb = 20000
-data = np.loadtxt("../data/mcmc.txt", skiprows=nb)
+nb = 30000
+
+data = np.loadtxt("../data/mcmc_04.txt", skiprows=nb)   # change into the file name you want to diagnose
 nt=data.shape[0]
+npar = data.shape[1]
 
-#data[:, 1] = (data[:, 1] + 0.5*data[:, 2] - 0.5*np.log(2.0))/np.log(10.0)
-#data[:, 2] = data[:, 2]/np.log(10.0)
+print(nt, npar)
 
-
-print(nt)
-
-par=np.zeros((nc+4, 3))
+par=np.zeros((npar-1, 3))
 
 def gaussian(x, amp, cen, wid):
     return (amp) * np.exp(-(x-cen)**2 /(2*wid**2))
@@ -36,27 +46,16 @@ def residual(params, x, data, eps_data):
 
     return (data-model)/eps_data
 
-for i in range(1,nc+4+1):
+for i in range(1,npar):
   print(i)
   sort=np.sort(data[:, i])
-# print(data[40000-1, i], data[40100, i], data[40200, i])
   mean = np.mean(data[:,i])
   std = np.std(data[:,i])
   low = np.percentile(data[:,i], 15.85, interpolation='linear')
   up = np.percentile(data[:,i], 100.0-15.85, interpolation='linear')
-  #if((i<=3) or (i==nc+4)):
-  #  hrange=(data[:,i].min(),data[:,i].max())
-  #else:
   hrange=[data[:,i].min(), data[:,i].max()]
-#hrange = (max(mean - 5.0*std, -15.0), mean + 5.0*std)
-  if(i==1000):
-    print("i-6")
-    idxsel = np.where((data[:,i] >= -5.0) & (data[:,i] <= 10.0) )
-  else:
-    idxsel = np.where((data[:,i] >= hrange[0]) & (data[:,i] <= hrange[1]) )
   
-
-  hist_data = data[idxsel[0],i]
+  hist_data = data[:,i]
   hist_range = (hist_data.min(), hist_data.max())
   print(i, hist_range)
 
@@ -72,8 +71,6 @@ for i in range(1,nc+4+1):
   params.add('cen', value=bin_centres[idx], min=bin_centres[0], max=bin_centres[-1])
   params.add('wid', value=std, min=0.0)
   idx = np.where( hist > np.max(hist)*0.0)
-  #if(i==6):
-  #  idx = np.where( hist > np.max(hist)*0.6)
 
   out = minimize(residual, params, args=(bin_centres[idx[0]], hist[idx[0]], eps_data[idx[0]]), method='leastsq')
 

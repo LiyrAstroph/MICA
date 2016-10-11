@@ -1,6 +1,6 @@
 /*
  * MICA (Multiple and Inhomogeneous Component Analysis)
- * A Non-parameteric ApproaCH to Constrain the Transfer Function in Reverberation Mapping
+ * A Non-parametric Approach to Constrain the Transfer Function in Reverberation Mapping
  * 
  * Yan-Rong Li, liyanrong@mail.ihep.ac.cn
  *
