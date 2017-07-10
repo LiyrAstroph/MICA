@@ -124,7 +124,7 @@ void mcmc_conline_init()
 // grid of time lag
   for(i=0; i<nc; i++)
   {
-    grid_tau[i] = (tau_lim_up-tau_lim_low)/(nc-1.0) * i;
+    grid_tau[i] = (tau_lim_up-tau_lim_low)/(nc-1.0) * i + tau_lim_low;
   }
 
 // limit range for parameters

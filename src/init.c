@@ -210,7 +210,7 @@ void memory_alloc()
 
   cov_matrix = array_malloc(ntheta_max * ntheta_max);
 
-  grid_tau = array_malloc(nc);
+  grid_tau = array_malloc(nc_lim_up);
   TF_tau = array_malloc(ntau);
   TF = array_malloc(ntau);
 

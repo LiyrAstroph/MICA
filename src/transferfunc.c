@@ -20,7 +20,7 @@ void transfer_function(double *theta)
   w = theta[2];
   for(i=0; i<nt; i++)
   {
-    TF_tau[i] = (tau_lim_up-tau_lim_low)/(nt-1.0) * i;
+    TF_tau[i] = (tau_lim_up-tau_lim_low)/(nt-1.0) * i + tau_lim_low;
   }
 #ifdef TOPHAT
   for(i=0; i<nt; i++)
