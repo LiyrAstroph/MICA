@@ -20,9 +20,13 @@ To run the code in a terminal, type:
 
 param.txt is the parameter file.
 
-## parameter file
+## Parameter file
 
 param.txt provided in the code specifies the configurations need by the code to run. Change them according to your datasets.
+
+## Outputs
+
+The best recovered transfer function is output into file ``data/transfer.txt``. Using the python script ``lcplot.py`` in the subdirectory ``analysis`` to plot the results.
 
 ## Author
 Yan-Rong Li,
