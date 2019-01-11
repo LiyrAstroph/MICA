@@ -1,3 +1,5 @@
+## MICA is no longer supported. Please use the second version ![MICA2](https://github.com/LiyrAstroph/MICA2).
+
 # MICA
 A Non-parametric Approach to Constrain the Transfer Function in Reverberation Mapping.
 
